@@ -475,6 +475,12 @@ export class TopNavLinks {
           target: '_blank',
         },
         {
+          title: 'CBR PNK HUB',
+          link: 'https://cyberpunkhub.com/',
+          desc: 'A must visit repository of Cyberpunk genre media: Movies, TV Series, Web Series, Novels, Computer games.',
+          target: '_blank',
+        },
+        {
           title: 'Datafortress 2020',
           link: 'http://datafortress2020.com/',
           desc: 'MUST MUST MUST VISIT! This is the greatest Cyberpunk site of them all.',
