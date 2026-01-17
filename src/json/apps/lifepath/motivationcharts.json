@@ -23,6 +23,43 @@
       "Defensive",
       "Complusive",
       "Manic"
+      ],
+      "cybersmily": [
+      "Shy and secretive",
+      "Rebellious, antisocial, violent",
+      "Arrogant, proud and aloof",
+      "Moody, rash and headstrong",
+      "Picky, fussy, and nervous",
+      "Stable and serious",
+      "Silly and fluffheaded",
+      "Sneaky and deceptive",
+      "Intellectual and detached",
+      "Friendly and outgoing",
+      "Indifferent",
+      "Cautious",
+      "Perfectionist",
+      "Altruistic",
+      "Defensive",
+      "Complusive",
+      "Manic",
+      "Charming and outgoing",
+      "Robotic",
+      "Humorous",
+      "Inquisitive/Nosy",
+      "Surly",
+      "Loud and boastful",
+      "Flamboyant and outgoing",
+      "Careless/Clumsy, fluffhead",
+      "Distracted, Intellectual",
+      "Cynical and aloof",
+      "Ambitious and headstrong",
+      "Calm and shy",
+      "Arrogant and detached",
+      "Sensible and shy",
+      "Respectful and friendly",
+      "Judgemental and secretive",
+      "Patronising and intellectual",
+      "Naive and nervous"
       ]
     },
   "valuedperson":{
@@ -49,7 +86,21 @@
         "A Personal Icon or Hero",
         "A Religious Leader",
         "A Teacher or Mentor"
-      ]
+      ],
+		    	"cybersmily": [
+					"A parent",
+					"A sibling",
+					"Lover",
+					"Friend",
+          "Colleague",
+					"Yourself",
+					"A pet",
+					"Teacher/mentor",
+					"Public figure",
+          "Historical person",
+					"A personal hero",
+					"No one"
+				]
     },
   "valuemost":{
         "CP2020": [
@@ -75,7 +126,27 @@
         "Power or Influence",
         "Skill",
         "Friendship"
-      ]
+      ],
+        "cybersmily": [
+					"Wealth",
+					"Honor",
+					"Your Word",
+					"Honesty",
+					"Knowledge",
+					"Vengeance",
+					"Love",
+					"Power",
+					"Having a good time",
+					"Skill",
+					"Friendship",
+          "Law/policy",
+          "Family",
+          "The Business/Organization",
+          "Tradition",
+          "Life",
+          "Possessions",
+          "Privacy/Solitude"
+				]
     },
     "feelaboutpeople":{
         "CP2020":[
@@ -97,9 +168,23 @@
         "Refuse to Make Judgements Until Known",
         "They are Useful Tools",
         "People are Basically Good"
-      ]
+      ],
+        "cybersmily":[
+					"Neutral",
+					"Neutral",
+					"Like almost everyone",
+					"Hate almost everyone",
+					"People are tools. Use them for your own goals and discard them",
+					"Every person is a valuable individual",
+          "Avoid the majority of them.",
+          "People are helpful as long as they are trusted",
+					"People are obstacles to be destroyed if they cross you",
+					"People are untrustworthy. Don't depend on anyone",
+					"Wipe 'em all out and give the place to the cockroaches",
+					"People are wonderful"
+				]
     },
-    "valuedpossesion":{
+    "valuedpossession":{
         "CP2020":[
         "A weapon",
         "A tool",
@@ -111,7 +196,24 @@
         "A piece of jewelry",
         "A toy",
         "A letter"
-      ]
+      ],
+        "cybersmily": [
+					"A firearm",
+          "A melee weapon",
+					"A tool",
+					"A piece of clothing",
+					"A photograph",
+					"A book or diary",
+					"A recording",
+					"A musical intrument",
+					"A piece of jewelry",
+					"A toy",
+          "A game/card/dice",
+          "A badge/trophy/certificate",
+					"A letter",
+          "A piece of cyberware",
+          "A bauble/trinket/tchochke"
+        ]
     }
   }
 }

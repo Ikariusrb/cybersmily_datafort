@@ -30,12 +30,12 @@ export class LifePathResults {
   print(): string {
     let output = '';
     output += 'LIFEPATH\r\n';
-    output += ' Style\r\n';
-    output += `  Clothes       ${this.appearance.clothes}\r\n`;
-    output += `  Hair          ${this.appearance.hairstyle}\r\n`;
-    output += `  Affectations  ${this.appearance.affectations}\r\n`;
-    output += `  Ethnicity     ${this.ethnicity.name}\r\n`;
-    output += `  Language      ${this.ethnicity.language}\r\n`;
+    output += ' STYLE\r\n';
+    output += `  Clothes: ${this.appearance.clothes}\r\n`;
+    output += `  Hair: ${this.appearance.hairstyle}\r\n`;
+    output += `  Affectations: ${this.appearance.affectations}\r\n`;
+    output += `  Ethnicity: ${this.ethnicity.name}\r\n`;
+    output += `  Language: ${this.ethnicity.language}\r\n`;
     output += '\r\n';
     output += ' Family Background\r\n';
     output += `  ${this.family.familyRanking} family ranking. ${this.family.familyBackground}\r\n`;
@@ -43,12 +43,12 @@ export class LifePathResults {
     output += ` ${this.family.siblings.getBrothersCount()} brothers`;
     output += ` and ${this.family.siblings.getSistersCount()} sisters\r\n`;
     output += '\r\n';
-    output += ` Motivtaions\r\n`;
-    output += `  Traits             ${this.motivations.personality}\r\n`;
-    output += `  Valued Person      ${this.motivations.valuedperson}\r\n`;
-    output += `  Valued Most        ${this.motivations.valuemost}\r\n`;
-    output += `  Feel About People  ${this.motivations.feelaboutpeople}\r\n`;
-    output += `  Valued Posession   ${this.motivations.valuedpossession}\r\n`;
+    output += ` MOTIVATIONS\r\n`;
+    output += `  Traits: ${this.motivations.personality}\r\n`;
+    output += `  Valued Person: ${this.motivations.valuedperson}\r\n`;
+    output += `  Valued Most: ${this.motivations.valuemost}\r\n`;
+    output += `  Feel About People: ${this.motivations.feelaboutpeople}\r\n`;
+    output += `  Valued Possession: ${this.motivations.valuedpossession}\r\n`;
     output += '\r\n';
     output += ` Life Events\r\n`;
     this.events.forEach( e => {

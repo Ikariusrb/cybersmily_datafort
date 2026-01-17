@@ -94,7 +94,7 @@ export class Cp2020LifepathSectionComponent implements OnInit {
     this.newLifPath = new LifePathResults(this.lifepath);
     this.years = this.eventYears;
     this.eventful = this.isAlwaysEventful;
-    this.selectedSource = this.source;
+    //this.selectedSource = this.source;
   }
 
   get siblings(): Array<Sibling> {

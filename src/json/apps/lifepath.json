@@ -15,7 +15,8 @@
     {"title":"Interlock Unlimited (IU)","value":"IU"},
     {"title":"IU - Central/South Am","value":"IUCentralSoAm"},
     {"title":"IU - African","value":"IUAfrican"},
-    {"title":"Deep Space Alternative","value":"CSDSpace"}
+    {"title":"Deep Space Alternative","value":"CSDSpace"},
+    {"title":"Cybersmily's Custom","value":"cybersmily"}
 	],
 	"origins":{
 		"CP2020": [
@@ -123,7 +124,44 @@
 				"Defensive",
 				"Complusive",
 				"Manic"
-				]
+				],
+      "cybersmily": [
+      "Shy and secretive",
+      "Rebellious, antisocial, violent",
+      "Arrogant, proud and aloof",
+      "Moody, rash and headstrong",
+      "Picky, fussy, and nervous",
+      "Stable and serious",
+      "Silly and fluffheaded",
+      "Sneaky and deceptive",
+      "Intellectual and detached",
+      "Friendly and outgoing",
+      "Indifferent",
+      "Cautious",
+      "Perfectionist",
+      "Altruistic",
+      "Defensive",
+      "Complusive",
+      "Manic",
+      "Charming and outgoing",
+      "Robotic",
+      "Humorous",
+      "Inquisitive/Nosy",
+      "Surly",
+      "Loud and boastful",
+      "Flamboyant and outgoing",
+      "Careless/Clumsy, fluffhead",
+      "Distracted, Intellectual",
+      "Cynical and aloof",
+      "Ambitious and headstrong",
+      "Calm and shy",
+      "Arrogant and detached",
+      "Sensible and shy",
+      "Respectful and friendly",
+      "Judgemental and secretive",
+      "Patronising and intellectual",
+      "Naive and nervous"
+      ]
 			}
 		},
 		{
@@ -152,6 +190,20 @@
 					"A Personal Icon or Hero",
 					"A Religious Leader",
 					"A Teacher or Mentor"
+				],
+		    	"cybersmily": [
+					"A parent",
+					"A sibling",
+					"Lover",
+					"Friend",
+          "Colleague",
+					"Yourself",
+					"A pet",
+					"Teacher/mentor",
+					"Public figure",
+          "Historical person",
+					"A personal hero",
+					"No one"
 				]
 			}
 		},
@@ -181,6 +233,26 @@
 					"Power or Influence",
 					"Skill",
 					"Friendship"
+				],
+        "cybersmily": [
+					"Wealth",
+					"Honor",
+					"Your Word",
+					"Honesty",
+					"Knowledge",
+					"Vengeance",
+					"Love",
+					"Power",
+					"Having a good time",
+					"Skill",
+					"Friendship",
+          "Law/policy",
+          "Family",
+          "The Business/Organization",
+          "Tradition",
+          "Life",
+          "Possessions",
+          "Privacy/Solitude"
 				]
 			}
 		},
@@ -206,11 +278,25 @@
 					"Refuse to Make Judgements Until Known",
 					"They are Useful Tools",
 					"People are Basically Good"
+				],
+        "cybersmily":[
+					"Neutral",
+					"Neutral",
+					"Like almost everyone",
+					"Hate almost everyone",
+					"People are tools. Use them for your own goals and discard them",
+					"Every person is a valuable individual",
+          "Avoid the majority of them.",
+          "People are helpful as long as they are trusted",
+					"People are obstacles to be destroyed if they cross you",
+					"People are untrustworthy. Don't depend on anyone",
+					"Wipe 'em all out and give the place to the cockroaches",
+					"People are wonderful"
 				]
 			}
 		},
 		{
-			"title":"Valued Possesion",
+			"title":"Valued Possession",
 			"options":{
 		    	"CP2020":[
 					"A weapon",
@@ -223,7 +309,24 @@
 					"A piece of jewelry",
 					"A toy",
 					"A letter"
-				]
+				],
+        "cybersmily": [
+					"A firearm",
+          "A melee weapon",
+					"A tool",
+					"A piece of clothing",
+					"A photograph",
+					"A book or diary",
+					"A recording",
+					"A musical intrument",
+					"A piece of jewelry",
+					"A toy",
+          "A game/card/dice",
+          "A badge/trophy/certificate",
+					"A letter",
+          "A piece of cyberware",
+          "A bauble/trinket/tchochke"
+        ]
 			}
 		}
 	],
@@ -296,6 +399,28 @@
           "Utilitarian",
           "Lesiure Wear",
           "Urban Flash",
+          "Big Suits",
+					"Bag Lady Chic",
+          "Paramilitary"
+        ],
+        "cybersmily":[
+					"Leathers",
+					"Denim/Jeans",
+					"Businesswear",
+					"Coveralls/Jumpsuits",
+          "Short, Open",
+					"High Fashion",
+					"Cammos",
+					"Normal Clothes",
+					"Lingerie/Nude",
+          "Tribal Dress",
+          "Generic",
+          "Ethnic/Historical",
+          "Gi/Robes",
+          "Utilitarian",
+          "Lesiure Wear",
+          "Urban Flash",
+          "Edgerunnner",
           "Big Suits",
 					"Bag Lady Chic",
           "Paramilitary"
@@ -387,6 +512,35 @@
           "Box fade",
           "Tech cut"
         ],
+        "cybersmily":[
+					"Mohawk, strip",
+          "Mohawk, shaved sides",
+          "Mohawk, spiked",
+          "Mohawk, tech",
+					"Long, ratty",
+          "Long, natural",
+					"Long, straight",
+          "Long, slicked back",
+          "Long, braids/dreads",
+          "Long, perm",
+          "Long, ponytail",
+          "Long, pigtails",
+          "Long, tech",
+					"Short, spiked",
+					"Short, neat",
+					"Short, curly",
+					"Short, wild",
+					"Short, slicked back",
+          "Short, greasy",
+          "Short, braids/dreads",
+          "Short, perm",
+          "Short, ponytail",
+          "Short, pigtails",
+          "Short, tech",
+					"Bald/shaved",
+          "Crew/fade out",
+          "Box fade"
+        ],
         "CSDSpace":[
           "Mohawk",
           "Short, Neat",
@@ -471,6 +625,36 @@
           "Androgyne make-up",
           "Bandanas/hairbands",
           "Pouches/bags"
+				],
+        "cybersmily":[
+					"Tattoos",
+					"Mirrorshades",
+					"Scarring/branding",
+					"Spiked gloves",
+					"Nose rings",
+					"Earrings",
+					"Long fingernails",
+					"Heels",
+					"Weird lenses",
+					"Fingerless gloves",
+          "Bracelets",
+          "Rings",
+          "Knecklaces",
+          "Facial Piercings (cheeks, lips, chin, etc.)",
+          "Body Piercings",
+          "Hats/caps",
+          "Boots",
+          "Makeup/facepaint",
+          "Skin tints",
+          "Goggles & gear",
+          "Androgyne make-up",
+          "Bandanas/hairbands",
+          "Pouches/bags",
+          "Vap/Cigarettes/Cigars/Pipe",
+          "Scarves/Turtlenecks/Chokers",
+          "Gadgets/Tech",
+          "Masks",
+          "Tribal/Pagan fetishes"
 				],
         "CSDSpace":[
           "ritual scars",
