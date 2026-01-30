@@ -1,10 +1,14 @@
 export class SourceBookLookup {
+
     static getSource(abbrev: string): string {
       if (!abbrev || abbrev === '') {
         return '';
       }
       if ( abbrev.toLocaleLowerCase().startsWith('cp')) {
-        return 'Cyberpunk 2020 2nd ed.';
+        return 'Cyberpunk 2020';
+      }
+      if ( abbrev.toLocaleLowerCase().startsWith('pac')) {
+        return 'Pacific Rim';
       }
         switch (abbrev.toLowerCase()) {
             case 'chr1':
@@ -22,6 +26,7 @@ export class SourceBookLookup {
             case 'ws':
               return 'Wildside';
             case 'neo':
+            case 'neotribe':
               return 'Neo Tribes';
             case 'sof':
               return 'Solo of Fortune';
@@ -33,13 +38,12 @@ export class SourceBookLookup {
               return 'Listen Up, You Primitive Screwheads!!!';
             case 'ps':
             case 'p+s':
+            case 'protectserve':
               return 'Protect & Serve';
             case 'wgf':
               return 'When Gravity Fails';
             case 'ds':
               return 'Deep Space';
-            case 'pac':
-              return 'Pacific Rim Sourcebook';
             case 'mm':
               return 'Maximum Metal';
             case 'hob':
@@ -55,6 +59,7 @@ export class SourceBookLookup {
             case 'cb3':
               return 'Corpbook 3';
             case 'es+':
+            case 'europlus':
               return 'Eurosource Plus';
             case 'es':
               return 'Eurosource';
@@ -90,6 +95,16 @@ export class SourceBookLookup {
               return 'Forlorn Hope';
             case 'cgen':
               return 'Cybergeneration';
+            case 'cybersmily':
+              return 'Cybersmily\'s Custom';
+            case 'csdspace':
+              return 'Cybersmily Deep Space';
+            case 'iu':
+              return 'Interlock Unlimited';
+            case 'iucentralsoam':
+              return 'IU - Central/South Am';
+            case 'iuafrican':
+              return 'IU - African';
             default:
                 return '??';
         }
@@ -206,6 +221,9 @@ export class SourceBookLookup {
       }
       if (RegExp(/cybergeneration.*/gi).test(name)) {
         return 'Cgen';
+      }
+      if (RegExp(/cybersmily.*/gi).test(name)) {
+        return 'cybersmily';
       }
       return '??';
     }

@@ -45,4 +45,9 @@ export class AppCharacterSettingsComponent implements OnInit, AfterViewInit {
   saveSettings() {
     this.updateSettings.emit(this.currSettings);
   }
+
+  selectedLifePathSource($event: string, section: string) {
+    this.currSettings.lifePathSource[section] = $event;
+    this.saveSettings();
+  }
 }

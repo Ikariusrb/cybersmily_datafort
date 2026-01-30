@@ -27,4 +27,8 @@ export class SourcesDataService {
         })
       );
   }
+
+  getTitle(value: string) : Observable<string> {
+    return this.getSources().pipe(  map(src => src.find( s => s.value === value)?.title ));
+  }
 }

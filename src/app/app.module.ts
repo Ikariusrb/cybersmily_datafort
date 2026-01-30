@@ -5,7 +5,6 @@ import { NpcProfileModalComponent } from './shared/modules/npcs/npcProfileModal/
 import { AppRoutingModule } from './datafort-routes';
 import { SharedModule, AppBootstrapModule } from './shared/modules';
 import { NgModule } from '@angular/core';
-import { AppComponent } from './app.component';
 import { SaveFileService, DataService } from './shared/services/file-services';
 import { PipesModule } from './shared/pipes/pipes.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

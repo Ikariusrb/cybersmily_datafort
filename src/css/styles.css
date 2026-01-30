@@ -128,7 +128,6 @@ INPUT.csd-number-sm {
 }
 
 BUTTON {
-	background: none;
 	color: inherit;
 	border: none !important;
 	padding: 0;
@@ -672,4 +671,8 @@ div svg circle.neticon:hover {
 
 .outline-red {
   text-shadow:  -1px -1px 0 #f00, 1px -1px 0 #f00, -1px 1px 0 #f00, 1px 1px 0 #f00;
+}
+
+div.p-component.p-popover {
+  z-index: 1200 !important;
 }

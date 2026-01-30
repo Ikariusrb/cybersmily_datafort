@@ -1,0 +1,25 @@
+<span class="p-0 m-0">
+  @if(showTitle() && sourcesListService$.getTitle(defaultSource()) | async; as title) {
+    <div class="d-inline-block">
+      {{ title }}
+    </div>
+  }
+  <button (click)="poSourceBook.toggle($event)" class="csd-icon-btn csd-btn bg-white" title="Current Source: {{defaultSource()}}">
+    <fa-icon class="m-0 p-0" [icon]="faBook" [size]="buttonSize()" class="csd-icon-btn"></fa-icon>
+  </button>
+</span>
+<p-popover #poSourceBook header="Source Book" >
+  <div class="flex items-center gap-4 mb-4">
+    @if(sourcesListService$.getSources() | async; as sources) {
+    <div class="d-inline-block">
+      <ul class="list-unstyled list-group">
+        @for (opt of sources; track $index) {
+        <li (click)="selectSource(opt.value)" style="padding: 0px 6px;" class="csd-btn list-group-item {{(defaultSource() == opt.value) ? 'bg-secondary' : ''}}">{{opt.title}}</li>
+        }
+      </ul>
+    </div>
+    } @else {
+      <div>Could not get sources at this time</div>
+    }
+  </div>
+</p-popover>

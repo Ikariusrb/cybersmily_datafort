@@ -1,3 +1,4 @@
+import { lifePathSourceSettings } from './../../models/cp2020-char-gen-settings';
 import { LifePathGeneratorService, SourcesDataService } from './../services';
 import { TitleValue } from './../../../models/title-value';
 import { Sibling, LifePathResults, LifepathEvent } from './../models';
@@ -7,7 +8,6 @@ import {
   Input,
   Output,
   EventEmitter,
-  OnChanges,
   ViewChildren,
   QueryList,
   ElementRef,
@@ -22,6 +22,7 @@ import {
   faTrash,
   faChevronRight,
   faChevronDown,
+  faBook,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -39,6 +40,7 @@ export class Cp2020LifepathSectionComponent implements OnInit {
   faTrash = faTrash;
   faChevronRight = faChevronRight;
   faChevronDown = faChevronDown;
+  faBook = faBook;
 
   get collapseChevron(): any {
     return this.isCollapsed ? this.faChevronRight : this.faChevronDown;
@@ -55,7 +57,10 @@ export class Cp2020LifepathSectionComponent implements OnInit {
   lifepath = new LifePathResults();
 
   @Input()
-  source: string = 'CP2020';
+  source: lifePathSourceSettings  = {family: 'CP2020', motivation: 'CP2020', style: 'CP2020', lifeEvents: 'CP2020'};
+
+  @Input()
+  sourceLifeEvents: lifePathSourceSettings = this.source;
 
   @Input()
   isAlwaysEventful: boolean = false;
@@ -86,7 +91,6 @@ export class Cp2020LifepathSectionComponent implements OnInit {
       this.sources = sources;
       this.years = this.eventYears;
       this.eventful = this.isAlwaysEventful;
-      this.selectedSource = this.source;
     });
   }
 

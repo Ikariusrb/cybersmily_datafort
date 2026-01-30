@@ -34,11 +34,12 @@ import { AppCharacterInstructionComponent } from './app-character-instruction/ap
 import { AppCharacterSettingsComponent } from './app-character-settings/app-character-settings.component';
 import { AppCharacterGeneratorMobileLayoutComponent } from './app-character-generator-mobile-layout/app-character-generator-mobile-layout.component';
 import { AppCharacterGeneratorFullLayoutComponent } from './app-character-generator-full-layout/app-character-generator-full-layout.component';
+import { Cp2020SourceSelectorComponent } from "./../shared/cp2020/cp2020-source-selector/cp2020-source-selector.component";
 
 @NgModule({
   declarations: [
     AppCharacterGeneratorFormComponent,
-    AppCharacterHandleComponent,
+    // AppCharacterHandleComponent,
     AppCharacterImageComponent,
     AppCharacterInstructionComponent,
     AppCharacterSettingsComponent,
@@ -48,6 +49,7 @@ import { AppCharacterGeneratorFullLayoutComponent } from './app-character-genera
   imports: [
     CommonModule,
     CommonUiModule,
+    AppCharacterHandleComponent,
     AppCharacterGeneratorRoutingModule,
     Cp2020weaponsModule,
     Cp2020CyberwareModule,
@@ -64,7 +66,8 @@ import { AppCharacterGeneratorFullLayoutComponent } from './app-character-genera
     Cp2020GearModule,
     ImageHolderModule,
     ModalModule.forRoot(),
-  ],
+    Cp2020SourceSelectorComponent
+],
   providers: [
     DiceService,
     DataService,

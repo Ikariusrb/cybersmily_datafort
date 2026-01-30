@@ -8,10 +8,6 @@
       <fa-icon *ngIf="!isCollapsed" [icon]="faDice" class="chargen-lifepath-dice hidden-print" (click)="roll()"
         title="Randomly generate lifepath">
       </fa-icon>
-      <select *ngIf="!isCollapsed" [(ngModel)]="selectedSource" class=" hidden-print">
-        <option value="?" selected="selected"></option>
-        <option *ngFor="let opt of sources" value="{{opt.value}}">{{opt.title}}</option>
-      </select>
       <span *ngIf="!isCollapsed">
       <input class="chargen-always-event hidden-print" type="checkbox" [(ngModel)]="eventful"
         title="check if you want to have an event for each year of Life Events"> always an event
@@ -27,9 +23,11 @@
       <div class="row">
         <div class="col-12 col-lg-5">
           <div class="row">
-            <div class="col">
-              <span class="chargen-label d-block" style="width: 70px">Style</span>
+            <div class="col-12">
+              <span class="chargen-label d-inline-block" style="width: 70px">Style</span><span class="text-xsmall">({{source.style | sourcebook}})</span>
             </div>
+        <div class="col">
+        </div>
           </div>
           <div class="row">
             <div class="col ms-2">
@@ -65,7 +63,7 @@
         <div class="col-12 col-lg-5">
           <div class="row">
             <div class="col">
-              <span class="chargen-label d-block" style="width: 110px">Motivations</span>
+              <span class="chargen-label d-inline-block" style="width: 110px">Motivations</span><span class="text-xsmall">({{source.motivation | sourcebook}})</span>
             </div>
           </div>
           <div class="row">
@@ -98,8 +96,12 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-12">
+          <div class="chargen-label d-inline-block" style="width: 180px">Family Background</div><span class="text-xsmall">({{source.family | sourcebook}})</span>
+        </div>
+      </div>
+      <div class="row">
         <div class="col">
-          <div class="chargen-label d-block" style="width: 180px">Family Background</div>
           <textarea [(ngModel)]="newLifPath.family.familyBackground" (change)="onChangeLifePath()"
             class="chargen-lifepath-family"></textarea>
         </div>
@@ -132,8 +134,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="col">
-          <span class="chargen-label">Life Events</span> One event for each year after age 16
+        <div class="col-12">
+          <span class="chargen-label">Life Events</span><span class="text-xsmall">({{source.lifeEvents | sourcebook}})</span> One event for each year after age 16
         </div>
       </div>
       <div class="row">

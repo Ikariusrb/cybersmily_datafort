@@ -223,17 +223,29 @@
     <div class="row">
       <div class="col-1"></div>
       <div class="col">
-        System to Use:
-        <select
-          [(ngModel)]="currSettings.lifePathSource"
-          class="hidden-print"
-          tabindex="0"
-        >
-          <option value="?" selected="selected"></option>
-          <option *ngFor="let opt of sources" value="{{ opt.value }}">
-            {{ opt.title }}
-          </option>
-        </select>
+        Style source:
+        <cs-cp2020-source-selector class="ms-2" [defaultSource]="currSettings.lifePathSource.style" (changeSource)="selectedLifePathSource($event, 'style')"></cs-cp2020-source-selector>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-11">
+        Motivation source:
+        <cs-cp2020-source-selector class="ms-2" [defaultSource]="currSettings.lifePathSource.motivation" (changeSource)="selectedLifePathSource($event, 'motivation')"></cs-cp2020-source-selector>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col">
+        Family source:
+        <cs-cp2020-source-selector class="ms-2" [defaultSource]="currSettings.lifePathSource.family" (changeSource)="selectedLifePathSource($event, 'family')"></cs-cp2020-source-selector>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col">
+        Life Events source:
+        <cs-cp2020-source-selector class="ms-2" [defaultSource]="currSettings.lifePathSource.lifeEvents" (changeSource)="selectedLifePathSource($event, 'lifeEvents')"></cs-cp2020-source-selector>
       </div>
     </div>
     <div class="row">

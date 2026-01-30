@@ -1,3 +1,4 @@
+import { CrCzSourceSelectorComponent } from './../../../app-cp-combat-zone/cr-cz-source-selector/cr-cz-source-selector.component';
 import { LifepathFamilyComponent } from './lifepath-family/lifepath-family.component';
 import { LifepathEventsComponent } from './lifepath-events/lifepath-events.component';
 import { LifepathEthnicityComponent } from './lifepath-ethnicity/lifepath-ethnicity.component';
@@ -9,6 +10,7 @@ import { CommonUiModule } from './../../modules/common-ui/common-ui.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Cp2020LifepathSectionComponent } from './cp2020-lifepath-section/cp2020-lifepath-section.component';
+import { Cp2020SourceSelectorComponent } from "../cp2020-source-selector/cp2020-source-selector.component";
 
 
 
@@ -23,8 +25,10 @@ import { Cp2020LifepathSectionComponent } from './cp2020-lifepath-section/cp2020
   imports: [
     CommonModule,
     CommonUiModule,
-    PipesModule
-  ],
+    PipesModule,
+    CrCzSourceSelectorComponent,
+    Cp2020SourceSelectorComponent
+],
   providers: [
     DiceService,
     DataService
