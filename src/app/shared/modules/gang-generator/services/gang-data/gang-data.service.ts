@@ -22,6 +22,7 @@ export class GangDataService {
       map((data) => {
         this._gangCharts = data;
         return this._gangCharts;
+
       })
     );
   }

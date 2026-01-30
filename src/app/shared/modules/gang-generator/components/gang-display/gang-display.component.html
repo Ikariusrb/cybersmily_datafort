@@ -5,8 +5,18 @@
 </div>
 <div class="row">
   <div class="col-12">
-    A {{ gang?.member }} {{ gang?.type }}. The gang has been around for
+    THREAT CODE: {{gang?.threatCode}}
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <span class="text-capitalize">{{gang?.name}}</span> are a <span class="text-capitalize">{{gang?.type }}</span> gang that has a {{ gang?.member }} membership. The gang has been around for
     {{ gang?.age }} with the average member's age being {{ gang?.memberAge }}.
-    The gang controls {{ gang?.turf }} with {{ gang?.expansion }}
+    The gang controls {{ gang?.turf }} with {{ gang?.expansion }}.
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    Criminal Activities include: {{gang?.crimes}}
   </div>
 </div>

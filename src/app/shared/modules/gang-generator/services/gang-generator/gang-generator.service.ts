@@ -50,6 +50,13 @@ export class GangGeneratorService {
     this._gangCharts.member = this.fillChart(data.member);
     this._gangCharts.turf = this.fillChart(data.turf);
     this._gangCharts.expansion = this.fillChart(data.expansion);
+    this._gangCharts.baseCrimes = data?.baseCrimes;
+    this._gangCharts.crimes = data?.crimes.map(crime => crime.value);
+    this._gangCharts.threatCodes = {
+      skill: [...data.threatcode?.skill],
+      weapon: [...data.threatcode?.weapon],
+      armor: [...data.threatcode?.armor]
+    };
     this._gangCharts.naming = {
       adjectives: [...data.naming.adjectives],
       objects: [...data.naming.objects],
@@ -61,9 +68,7 @@ export class GangGeneratorService {
     const result = new Array<GangChartEntry>();
     list.forEach((item) => {
       for (let i = 0; i < item.wt; i++) {
-        const entry: GangChartEntry = new GangChartEntry();
-        entry.value = item.value;
-        entry.mod = item?.mod;
+        const entry: GangChartEntry = {...item};
         result.push(entry);
       }
     });
@@ -94,6 +99,8 @@ export class GangGeneratorService {
     // roll for expansion
     entry = this.generateEntry(charts.expansion, expansionMod);
     gang.expansion = entry.value;
+    gang.threatCode = this.genaerateThreatCode();
+    gang.crimes = this.generateCrimes(gang.type);
     return gang;
   }
 
@@ -101,13 +108,37 @@ export class GangGeneratorService {
     chart: Array<GangChartEntry>,
     modifier?: number
   ): GangChartEntry {
-    if (modifier === null) {
+    if (modifier) {
       let dieRoll = this.dice.generateNumber(0, chart.length + modifier);
+      const topRange = chart.length - 1;
       dieRoll =
-        dieRoll < 0 ? 0 : dieRoll > chart.length - 1 ? chart.length : dieRoll;
+        dieRoll < 0 ? 0 : dieRoll >  topRange ? topRange: dieRoll;
       return chart[dieRoll];
     }
+
     return this.dice.rollRandomItem<GangChartEntry>(chart);
+  }
+
+  private generateCrimes(gangType: string): string {
+    let crimes = [...this._gangCharts.baseCrimes[gangType]];
+    const numberCrimes = this.dice.generateNumber(-2, 10);
+    for(let i = 0; i < numberCrimes; i++) {
+      const crime: string = this.dice.rollRandomItem<string>(this._gangCharts.crimes);
+      if(!crimes.includes(crime)) {
+        crimes.push(crime);
+      }
+    }
+    return crimes.sort().join(', ');
+  }
+
+  private genaerateThreatCode(): string {
+    let roll = this.dice.generateNumber(0,9);
+    const skill = this._gangCharts.threatCodes.skill[roll];
+    roll = this.dice.generateNumber(0,9);
+    const weapon = this._gangCharts.threatCodes.weapon[roll];
+    roll = this.dice.generateNumber(0,9);
+    const armor = this._gangCharts.threatCodes.armor[roll];
+    const threatCode = `${skill.key}${weapon.key}${armor.key} - Members have ${skill.value}, carry ${weapon.value}, and wear ${armor.value}.`;    return threatCode;
   }
 
   private generateName(charts: GangChart): string {
@@ -116,23 +147,26 @@ export class GangGeneratorService {
       charts.naming?.adjectives
     );
     const object = this.dice.rollRandomItem<string>(charts.naming?.objects);
+    const secondObject = this.dice.rollRandomItem<string>(charts.naming?.objects);
     let name = '';
     const dieRoll = this.dice.generateNumber(1, 10);
     switch (dieRoll) {
       case 1:
-        name = `${adjective} ${object} ${unit}`;
+        name = `${object} of ${adjective} ${secondObject}`;
         break;
       case 2:
-        name = `${unit} of ${adjective} ${object}`;
-        break;
       case 3:
-        name = `the ${adjective} ${object}`;
+        name = `${unit} of the ${adjective} ${object}`;
         break;
       case 4:
-        name = `the ${adjective} ${object} ${unit}`;
+        name = `${object} of ${adjective}`;
         break;
       case 5:
-        name = `${object} of ${adjective}`;
+        name = `${object} of the ${secondObject}`;
+        break;
+      case 6:
+      case 7:
+        name = `${adjective} ${object} ${unit}`;
         break;
       default:
         name = `${adjective} ${object}`;
