@@ -1,106 +1,65 @@
 import {
   GangChartEntry,
-  GangChart,
   CpGang,
-  GangChartData,
+  gangNamingTable,
+  gangThreatCodeTable,
 } from './../../models';
-import { ValueWeight } from './../../../../models/ValueWeight';
 import { DiceService } from './../../../../services/dice/dice.service';
-import { Observable, of, map } from 'rxjs';
 import { GangDataService } from './../gang-data/gang-data.service';
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal, effect } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GangGeneratorService {
-  private _gangCharts: GangChart;
+  private _gangChartService = inject(GangDataService);
+  private _dice = inject(DiceService);
+  private _gangList = signal<Array<CpGang>>([]);
 
-  constructor(
-    private gangChartService: GangDataService,
-    private dice: DiceService
-  ) {}
+  gangList = this._gangList.asReadonly();
 
-  generateGang(count?: number): Observable<Array<CpGang>> {
-    const numOfGangs = count ?? 1;
-    if (this._gangCharts) {
-      return of(this.createGangs(numOfGangs, this._gangCharts));
-    }
-    return this.gangChartService.GangDataCharts.pipe(
-      map((charts) => {
-        this.fillCharts(charts);
-        return this.createGangs(numOfGangs, this._gangCharts);
-      })
-    );
+  generateGang(count: number = 1): void {
+    this._gangList.set(this.createGangs(count));
   }
 
-  private createGangs(count: number, charts: GangChart): Array<CpGang> {
+  clear(): void {
+    this._gangList.set([]);
+  }
+
+  private createGangs(count: number): Array<CpGang> {
     const gangs = new Array<CpGang>();
     for (let i = 0; i < count; i++) {
-      gangs.push(this.rollGang(charts));
+      gangs.push(this.rollGang());
     }
     return gangs;
   }
 
-  private fillCharts(data: GangChartData): void {
-    this._gangCharts = new GangChart();
-    this._gangCharts.type = this.fillChart(data.type);
-    this._gangCharts.age = this.fillChart(data.age);
-    this._gangCharts.memberAge = this.fillChart(data.memberAge);
-    this._gangCharts.member = this.fillChart(data.member);
-    this._gangCharts.turf = this.fillChart(data.turf);
-    this._gangCharts.expansion = this.fillChart(data.expansion);
-    this._gangCharts.baseCrimes = data?.baseCrimes;
-    this._gangCharts.crimes = data?.crimes.map(crime => crime.value);
-    this._gangCharts.threatCodes = {
-      skill: [...data.threatcode?.skill],
-      weapon: [...data.threatcode?.weapon],
-      armor: [...data.threatcode?.armor]
-    };
-    this._gangCharts.naming = {
-      adjectives: [...data.naming.adjectives],
-      objects: [...data.naming.objects],
-      units: [...data.naming.units],
-    };
-  }
-
-  private fillChart(list: Array<ValueWeight<string>>): Array<GangChartEntry> {
-    const result = new Array<GangChartEntry>();
-    list.forEach((item) => {
-      for (let i = 0; i < item.wt; i++) {
-        const entry: GangChartEntry = {...item};
-        result.push(entry);
-      }
-    });
-    return result;
-  }
-
-  private rollGang(charts: GangChart): CpGang {
+  private rollGang(): CpGang {
     const gang = new CpGang();
-    gang.name = this.generateName(charts);
+    gang.name = this.generateName(this._gangChartService.gangNamingChart());
     // roll for type
-    let entry = this.generateEntry(charts.type);
+    let entry = this.generateEntry(this._gangChartService.gangTypesChart());
     gang.type = entry.value;
     // roll for age, which modifies member rolls
-    entry = this.generateEntry(charts.age);
+    entry = this.generateEntry(this._gangChartService.gangAgeChart());
     const memberMod = entry?.mod.value;
     gang.age = entry.value;
     // roll for member's age
-    entry = this.generateEntry(charts.memberAge);
+    entry = this.generateEntry(this._gangChartService.gangMemberAgeChart());
     gang.memberAge = entry.value;
     // roll for member, which modifies turf
-    entry = this.generateEntry(charts.member, memberMod);
+    entry = this.generateEntry(this._gangChartService.gangMemberChart(), memberMod);
     gang.member = entry.value;
     const turfMod = entry.mod?.value;
     // roll for turf, which modifies expansion
-    entry = this.generateEntry(charts.turf, turfMod);
+    entry = this.generateEntry(this._gangChartService.gangTurfChart(), turfMod);
     gang.turf = entry.value;
     const expansionMod = entry.mod?.value;
     // roll for expansion
-    entry = this.generateEntry(charts.expansion, expansionMod);
+    entry = this.generateEntry(this._gangChartService.gangExpansionChart(), expansionMod);
     gang.expansion = entry.value;
-    gang.threatCode = this.genaerateThreatCode();
-    gang.crimes = this.generateCrimes(gang.type);
+    gang.threatCode = this.genaerateThreatCode(this._gangChartService.gangThreadCodesChart());
+    gang.crimes = this.generateCrimes(gang.type,this._gangChartService.gangBaseChrimesChart(),this._gangChartService.gangCrimeChart());
     return gang;
   }
 
@@ -109,21 +68,21 @@ export class GangGeneratorService {
     modifier?: number
   ): GangChartEntry {
     if (modifier) {
-      let dieRoll = this.dice.generateNumber(0, chart.length + modifier);
+      let dieRoll = this._dice.generateNumber(0, chart.length + modifier);
       const topRange = chart.length - 1;
       dieRoll =
         dieRoll < 0 ? 0 : dieRoll >  topRange ? topRange: dieRoll;
       return chart[dieRoll];
     }
 
-    return this.dice.rollRandomItem<GangChartEntry>(chart);
+    return this._dice.rollRandomItem<GangChartEntry>(chart);
   }
 
-  private generateCrimes(gangType: string): string {
-    let crimes = [...this._gangCharts.baseCrimes[gangType]];
-    const numberCrimes = this.dice.generateNumber(-2, 10);
+  private generateCrimes(gangType: string, baseCrimes: any, crimesChart: Array<GangChartEntry>): string {
+    let crimes = [...baseCrimes[gangType]];
+    const numberCrimes = this._dice.generateNumber(-2, 10);
     for(let i = 0; i < numberCrimes; i++) {
-      const crime: string = this.dice.rollRandomItem<string>(this._gangCharts.crimes);
+      const crime: string = this._dice.rollRandomItem<GangChartEntry>(crimesChart)?.value;
       if(!crimes.includes(crime)) {
         crimes.push(crime);
       }
@@ -131,30 +90,32 @@ export class GangGeneratorService {
     return crimes.sort().join(', ');
   }
 
-  private genaerateThreatCode(): string {
-    let roll = this.dice.generateNumber(0,9);
-    const skill = this._gangCharts.threatCodes.skill[roll];
-    roll = this.dice.generateNumber(0,9);
-    const weapon = this._gangCharts.threatCodes.weapon[roll];
-    roll = this.dice.generateNumber(0,9);
-    const armor = this._gangCharts.threatCodes.armor[roll];
+  private genaerateThreatCode(threadCodeTable: gangThreatCodeTable): string {
+    let roll = this._dice.generateNumber(0,9);
+    const skill = threadCodeTable.skill[roll];
+    roll = this._dice.generateNumber(0,9);
+    const weapon = threadCodeTable.weapon[roll];
+    roll = this._dice.generateNumber(0,9);
+    const armor = threadCodeTable.armor[roll];
     const threatCode = `${skill.key}${weapon.key}${armor.key} - Members have ${skill.value}, carry ${weapon.value}, and wear ${armor.value}.`;    return threatCode;
   }
 
-  private generateName(charts: GangChart): string {
-    const unit = this.dice.rollRandomItem<string>(charts.naming?.units);
-    const adjective = this.dice.rollRandomItem<string>(
-      charts.naming?.adjectives
+  private generateName(namingChart: gangNamingTable): string {
+    const unit = this._dice.rollRandomItem<string>(namingChart?.units);
+    const adjective = this._dice.rollRandomItem<string>(
+      namingChart?.adjectives
     );
-    const object = this.dice.rollRandomItem<string>(charts.naming?.objects);
-    const secondObject = this.dice.rollRandomItem<string>(charts.naming?.objects);
+    const object = this._dice.rollRandomItem<string>(namingChart?.objects);
+    const secondObject = this._dice.rollRandomItem<string>(namingChart?.objects);
     let name = '';
-    const dieRoll = this.dice.generateNumber(1, 10);
+    const dieRoll = this._dice.generateNumber(1, 10);
     switch (dieRoll) {
       case 1:
         name = `${object} of ${adjective} ${secondObject}`;
         break;
       case 2:
+        name = `${object.endsWith('s') ? object.slice(0,-1): object}'s ${adjective} ${secondObject}`;
+        break;
       case 3:
         name = `${unit} of the ${adjective} ${object}`;
         break;
@@ -165,6 +126,8 @@ export class GangGeneratorService {
         name = `${object} of the ${secondObject}`;
         break;
       case 6:
+        name = `${object.endsWith('s') ? object.slice(0,-1): object}'s ${secondObject}`;
+        break;
       case 7:
         name = `${adjective} ${object} ${unit}`;
         break;

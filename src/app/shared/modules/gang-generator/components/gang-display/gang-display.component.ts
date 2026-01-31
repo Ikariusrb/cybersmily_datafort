@@ -1,6 +1,5 @@
-import { CpGang } from './../../models/cp-gang';
-import { Gang } from './../../models/gang';
-import { Component, Input, OnInit } from '@angular/core';
+import { CpGang } from './../../models';
+import { Component, input } from '@angular/core';
 
 @Component({
     selector: 'cs-gang-display',
@@ -8,11 +7,6 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./gang-display.component.css'],
     standalone: false
 })
-export class GangDisplayComponent implements OnInit {
-  @Input()
-  gang: CpGang;
-
-  constructor() {}
-
-  ngOnInit(): void {}
+export class GangDisplayComponent {
+  gang = input<CpGang>(new CpGang());
 }

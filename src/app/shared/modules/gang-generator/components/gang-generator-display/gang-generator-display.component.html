@@ -27,14 +27,16 @@
       class="csd-btn csd-icon-btn csd-icon-xl float-end"
       title="Save as PDF file."
       (click)="savePDF()"
-      [disabled]="!(result$ | async)"
+      [disabled]="isEmpty()"
     >
       <fa-icon [icon]="faFilePdf"></fa-icon>
     </button>
   </div>
 </div>
-<div *ngFor="let gang of result$ | async" class="row mb-3">
+@for(gang of gangList();track $index){
+<div class="row mb-3">
   <div class="col-12">
     <cs-gang-display [gang]="gang"></cs-gang-display>
   </div>
 </div>
+}

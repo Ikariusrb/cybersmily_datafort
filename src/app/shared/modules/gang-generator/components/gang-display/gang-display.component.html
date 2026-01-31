@@ -1,22 +1,22 @@
 <div class="row">
   <div class="col-12">
-    <h4 class="text-capitalize">{{ gang?.name }}</h4>
+    <h4 class="text-capitalize">{{ gang()?.name }}</h4>
   </div>
 </div>
 <div class="row">
   <div class="col-12">
-    THREAT CODE: {{gang?.threatCode}}
+    THREAT CODE: {{gang()?.threatCode}}
   </div>
 </div>
 <div class="row">
   <div class="col-12">
-    <span class="text-capitalize">{{gang?.name}}</span> are a <span class="text-capitalize">{{gang?.type }}</span> gang that has a {{ gang?.member }} membership. The gang has been around for
-    {{ gang?.age }} with the average member's age being {{ gang?.memberAge }}.
-    The gang controls {{ gang?.turf }} with {{ gang?.expansion }}.
+    <span class="text-capitalize">{{gang()?.name}}</span> are a <span class="text-capitalize">{{gang()?.type }}</span> gang that has a {{ gang()?.member }} membership. The gang has been around for
+    {{ gang()?.age }} with the average member's age being {{ gang()?.memberAge }}.
+    The gang controls {{ gang()?.turf }} with {{ gang()?.expansion }}.
   </div>
 </div>
 <div class="row">
   <div class="col-12">
-    Criminal Activities include: {{gang?.crimes}}
+    Criminal Activities include: {{gang()?.crimes}}
   </div>
 </div>
