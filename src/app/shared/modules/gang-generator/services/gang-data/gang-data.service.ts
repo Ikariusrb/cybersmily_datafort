@@ -54,7 +54,6 @@ export class GangDataService {
 
   private fillChart(list: Array<ValueWeight<string>>): Array<GangChartEntry> {
     let result = new Array<GangChartEntry>();
-    console.log('list fillChart', list);
     list?.forEach((item) => {
       result = [...result, ...Array(item.wt).fill(item)];
     });
