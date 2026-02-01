@@ -1,21 +1,24 @@
 <div class="border border-dark mt-2">
   <div class="cp2020-label row">
     <div class="col">
-      <h4 class="d-inline-block csd-btn me-4" (click)="isCollapsed = !isCollapsed" (keyup.enter)="isCollapsed = !isCollapsed" tabindex="0">
+      <h4 class="d-inline-block csd-btn me-4" (click)="isCollapsed = !isCollapsed"
+        (keyup.enter)="isCollapsed = !isCollapsed" tabindex="0">
         LIFEPATH
         <fa-icon [icon]="collapseChevron" class="csd-icon-btn csd-icon-xl ms-2"></fa-icon>
       </h4>
-      <fa-icon *ngIf="!isCollapsed" [icon]="faDice" class="chargen-lifepath-dice hidden-print" (click)="roll()"
+      @if(!isCollapsed){
+      <fa-icon [icon]="faDice" class="chargen-lifepath-dice hidden-print" (click)="roll()"
         title="Randomly generate lifepath">
       </fa-icon>
-      <span *ngIf="!isCollapsed">
-      <input class="chargen-always-event hidden-print" type="checkbox" [(ngModel)]="eventful"
-        title="check if you want to have an event for each year of Life Events"> always an event
+      <span>
+        <input class="chargen-always-event hidden-print" type="checkbox" [(ngModel)]="eventful"
+          title="check if you want to have an event for each year of Life Events"> always an event
       </span>
-      <span *ngIf="!isCollapsed">
-      <input [(ngModel)]="years" class="chargen-years-event text-center hidden-print" type="number" min="0" max="12"
-        title="Enter the number of years to roll, 0-12. 0 will be randomly determined." (change)="changeYear()"> years
+      <span>
+        <input [(ngModel)]="years" class="chargen-years-event text-center hidden-print" type="number" min="0" max="12"
+          title="Enter the number of years to roll, 0-12. 0 will be randomly determined." (change)="changeYear()"> years
       </span>
+      }
     </div>
   </div>
   <div class="row mt-1" [collapse]="isCollapsed">
@@ -24,10 +27,11 @@
         <div class="col-12 col-lg-5">
           <div class="row">
             <div class="col-12">
-              <span class="chargen-label d-inline-block" style="width: 70px">Style</span><span class="text-xsmall">({{source.style | sourcebook}})</span>
+              <span class="chargen-label d-inline-block" style="width: 70px">Style</span><span
+                class="text-xsmall">({{source.style | sourcebook}})</span>
             </div>
-        <div class="col">
-        </div>
+            <div class="col">
+            </div>
           </div>
           <div class="row">
             <div class="col ms-2">
@@ -63,41 +67,43 @@
         <div class="col-12 col-lg-5">
           <div class="row">
             <div class="col">
-              <span class="chargen-label d-inline-block" style="width: 110px">Motivations</span><span class="text-xsmall">({{source.motivation | sourcebook}})</span>
+              <span class="chargen-label d-inline-block" style="width: 110px">Motivations</span><span
+                class="text-xsmall">({{source.motivation | sourcebook}})</span>
             </div>
           </div>
           <div class="row">
             <div class="col ms-2">
-              Traits <input [(ngModel)]="newLifPath.motivations.personality"
-      (change)="onChangeLifePath()" type="text" class="float-end" />
+              Traits <input [(ngModel)]="newLifPath.motivations.personality" (change)="onChangeLifePath()" type="text"
+                class="float-end" />
             </div>
           </div>
           <div class="row">
             <div class="col ms-2">
-              Valued Person <input [(ngModel)]="newLifPath.motivations.valuedperson"
-      (change)="onChangeLifePath()" type="text" class="float-end" />
+              Valued Person <input [(ngModel)]="newLifPath.motivations.valuedperson" (change)="onChangeLifePath()"
+                type="text" class="float-end" />
             </div>
           </div>
           <div class="row">
             <div class="col ms-2">Value Most <input [(ngModel)]="newLifPath.motivations.valuemost"
-              (change)="onChangeLifePath()" type="text" class="float-end" />
+                (change)="onChangeLifePath()" type="text" class="float-end" />
             </div>
           </div>
           <div class="row">
             <div class="col ms-2">Feel About People <input [(ngModel)]="newLifPath.motivations.feelaboutpeople"
-              (change)="onChangeLifePath()" type="text" class="float-end" />
+                (change)="onChangeLifePath()" type="text" class="float-end" />
             </div>
           </div>
           <div class="row">
             <div class="col ms-2">Valued Possesion <input [(ngModel)]="newLifPath.motivations.valuedpossession"
-              (change)="onChangeLifePath()" type="text" class="float-end" />
+                (change)="onChangeLifePath()" type="text" class="float-end" />
             </div>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-12">
-          <div class="chargen-label d-inline-block" style="width: 180px">Family Background</div><span class="text-xsmall">({{source.family | sourcebook}})</span>
+          <div class="chargen-label d-inline-block" style="width: 180px">Family Background</div><span
+            class="text-xsmall">({{source.family | sourcebook}})</span>
         </div>
       </div>
       <div class="row">
@@ -109,23 +115,31 @@
       <div class="row">
         <div class="col">
           <span class="chargen-label">#Siblings</span>
-          <span class="chargen-sibling" *ngIf="brothers > 0">
+          @if(brothers > 0){
+          <span class="chargen-sibling">
             <span>{{brothers}}</span>
             <fa-icon [icon]="faMars" style="font-size:20px;" class="ms-2"></fa-icon>
           </span>
-          <span class="chargen-sibling" *ngIf="sisters > 0">
+          }
+          @if(sisters > 0){
+          <span class="chargen-sibling">
             <span>{{sisters}}</span>
             <fa-icon [icon]="faVenus" style="font-size:20px;" class="ms-2"></fa-icon>
           </span>
-          <span class="chargen-sibling" *ngIf="sibs > 0">
+          }
+          @if(sibs > 0) {
+          <span class="chargen-sibling">
             <span>{{sibs}}</span>
             <fa-icon [icon]="faGenderless" style="font-size:20px;" class="ms-2"></fa-icon>
           </span>
-          </div>
+          }
+        </div>
       </div>
-      <div class="row border border-dark" *ngFor="let sib of siblings;let i = index">
+      @for(sib of siblings;track $index;let i = $index){
+      <div class="row border border-dark">
         <ng-container *ngTemplateOutlet="sibling;context: {sib: sib, i: i}"></ng-container>
       </div>
+      }
       <div class="row hidden-print border border-dark">
         <div class="col text-center">
           <button #newSiblingElem class="csd-icon-btn csd-btn w-100 mb-2" (click)="addSibling()">
@@ -135,7 +149,8 @@
       </div>
       <div class="row">
         <div class="col-12">
-          <span class="chargen-label">Life Events</span><span class="text-xsmall">({{source.lifeEvents | sourcebook}})</span> One event for each year after age 16
+          <span class="chargen-label">Life Events</span><span class="text-xsmall">({{source.lifeEvents |
+            sourcebook}})</span> One event for each year after age 16
         </div>
       </div>
       <div class="row">
@@ -143,10 +158,10 @@
           Year
         </div>
       </div>
-      <div *ngFor="let event of newLifPath.events; let i = index" class="row g-0 border border-dark">
+      @for(event of newLifPath.events; track $index; let i = $index) {
+      <div class="row g-0 border border-dark">
         <div class="col-2 col-md-1">
-          <input [(ngModel)]="event.age" type="number" min="0" max="150"
-            class="csd-number" />
+          <input [(ngModel)]="event.age" type="number" min="0" max="150" class="csd-number" />
           <button class="csd-icon-btn csd-btn ms-1" (click)="removeYear(i)">
             <fa-icon [icon]="faTrash"></fa-icon>
           </button>
@@ -156,6 +171,7 @@
             style="width:100%;"></textarea>
         </div>
       </div>
+      }
       <div class="row border border-dark g-0 hidden-print">
         <div class="col text-center">
           <button class="csd-icon-btn csd-btn w-100" (click)="addYear()">
