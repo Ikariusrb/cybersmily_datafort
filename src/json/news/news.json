@@ -1,5 +1,15 @@
 ﻿{
   "news": [
+    {"date": "2025-02",
+    "entries": [
+      "<strong>02-01</strong> - It has been an eventful few months for me personally. I have done minor data updates during this time, but have done some singificant upatest to some of the utilities.",
+      "Updates:",
+      " - Gang Generator got quite a bit of love. I have an upcoming NCPD campaign and need some more functionality from it. I have added Threat Codes to the gang as well as adding what criminal activity the gang is involved in. I have also added more options for name creation and other areas.",
+      " - Cyberpunk 2020 Character Generator LifePath Settings Section - I have provided options to set the source for each of the LifePath sections: motivation, style, family, and life events. Got to the settings to set these.",
+      " - Cyberpunk 2020 LifePath - I have added my own source to use for more random options.",
+      "CYBER :D"
+  ]
+  },
     {"date": "2025-10",
     "entries": [
       "<strong>10-25</strong> - Working on an overall of the site to use the latest features of the framework I use for the site. Small updates and bug fixes will be done like this one.",
