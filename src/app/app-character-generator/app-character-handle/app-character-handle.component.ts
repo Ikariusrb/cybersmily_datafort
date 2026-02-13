@@ -1,22 +1,21 @@
-import { DiceService } from './../../shared/services/dice/dice.service';
 import { faDice } from '@fortawesome/free-solid-svg-icons';
 import { NameGeneratorService } from './../../shared/services/namegen/name-generator.service';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, input, model, output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
     selector: 'cs-app-character-handle',
     templateUrl: './app-character-handle.component.html',
     styleUrls: ['./app-character-handle.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [FormsModule, FontAwesomeModule]
 })
 export class AppCharacterHandleComponent implements OnInit {
   faDice = faDice;
 
-  @Input()
-  handle: string;
-
-  @Output()
-  changeHandle = new EventEmitter<string>();
+  handle = model<string>();
+  changeHandle = output<string>();
 
   constructor(private nameService: NameGeneratorService) { }
 
@@ -24,12 +23,12 @@ export class AppCharacterHandleComponent implements OnInit {
   }
 
   onHandleChange() {
-    this.changeHandle.emit(this.handle);
+    this.changeHandle.emit(this.handle());
   }
 
   rollName() {
     this.nameService.generateName().subscribe( name => {
-      this.handle = name;
+      this.handle.set(name);
       this.onHandleChange();
     });
   }
