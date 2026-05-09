@@ -14,4 +14,6 @@ export interface iCrCzGearItemCard {
   attributes: Array<string>;
   flipped?: boolean;
   release?: Array<string>;
+  isMod: boolean;
+
 }

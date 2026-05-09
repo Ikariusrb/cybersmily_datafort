@@ -19,6 +19,8 @@ import { CrCzProgramCardComponent } from './cr-cz-program-card/cr-cz-program-car
 import { CrCzSourceSelectorComponent } from './cr-cz-source-selector/cr-cz-source-selector.component';
 import { CrCzRangeDisplayComponent } from './cr-cz-range-display/cr-cz-range-display.component';
 import { CrCzGearCardFBCComponent } from './cr-cz-gear-fbc-card/cr-cz-gear-fbc-card.component';
+import { CrCzVehicleListComponent } from './cr-cz-vehicle-list/cr-cz-vehicle-list.component';
+import { CrCzVehicleCardComponent } from './cr-cz-vehicle-card/cr-cz-vehicle-card.component';
 
 
 @NgModule({
@@ -35,7 +37,9 @@ import { CrCzGearCardFBCComponent } from './cr-cz-gear-fbc-card/cr-cz-gear-fbc-c
     CrCzGearCardComponent,
     CrCzGearCardFBCComponent,
     CrCzProgramCardComponent,
-    CrCzRangeDisplayComponent
+    CrCzRangeDisplayComponent,
+    CrCzVehicleListComponent,
+    CrCzVehicleCardComponent
   ],
   imports: [
     CommonModule,

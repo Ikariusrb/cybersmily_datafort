@@ -15,6 +15,7 @@ export function CreateCombatZoneGear(param?: any): iCrCzGearItemCard {
     attributes: (param?.attributes) ? [...param?.attributes] : [],
     flipped: param?.flipped || false,
     release: (param?.release) ? [...param?.release] : [],
+    isMod: param?.isMod || false,
   };
   return gear;
 }

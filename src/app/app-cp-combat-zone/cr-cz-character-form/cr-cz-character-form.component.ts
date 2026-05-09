@@ -11,6 +11,7 @@ import {
 import {
   Component,
   input,
+  inject,
   OnChanges,
   OnInit,
   SimpleChanges,
@@ -25,6 +26,7 @@ import { BsModalService, BsModalRef, ModalOptions } from 'ngx-bootstrap/modal';
 import { iCrCzGearItemCard } from '../models/cr-cz-gear-item-card';
 import { iCrCzNrProgramCard } from '../models/cr-cz-nr-program-card';
 import { CreateCombatZoneCharacterFromObject } from '../functions/create-combat-zone-character-from-object';
+import { CrCzGearDataService } from '../services/cr-cz-gear-data/cr-cz-gear-data.service';
 
 @Component({
   selector: 'cs-cr-cz-character-form',
@@ -47,21 +49,24 @@ export class CrCzCharacterFormComponent implements OnInit, OnChanges {
   totalStreetcred = input<number>();
   teamFaction = input<string>('');
 
+
+  private combatzoneArmyBuilder = inject<CrCzArmyBuilderService>(CrCzArmyBuilderService);
+  private modalService = inject<BsModalService>(BsModalService);
+  private gearDataService = inject<CrCzGearDataService>(CrCzGearDataService);
+
   unit$: Observable<iCrCzCharacterCard>;
   unit: iCrCzCharacterCard;
   unitGearList: Array<string> = new Array<string>();
   luck: Array<number> = [];
+  get gearList$(): Observable<Array<iCrCzGearItemCard>> {
+    return this.gearDataService.gearList;
+  }
 
   modalRef: BsModalRef;
   modalConfig: ModalOptions = {
     class: 'modal-right modal-xl',
     animated: true,
   };
-
-  constructor(
-    private combatzoneArmyBuilder: CrCzArmyBuilderService,
-    private modalService: BsModalService
-  ) {}
 
   ngOnInit(): void {
     this.setSubscriptions();

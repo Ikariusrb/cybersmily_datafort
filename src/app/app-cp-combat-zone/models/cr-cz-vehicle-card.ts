@@ -1,6 +1,6 @@
 import { KeyValue } from "@angular/common";
 
-export interface CrCzVehicleCard {
+export interface iCrCzVehicleCard {
   name: string;
   keywords: Array<string>;
   eb: number;

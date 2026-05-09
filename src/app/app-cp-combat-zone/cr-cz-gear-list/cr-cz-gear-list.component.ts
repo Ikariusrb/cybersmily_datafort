@@ -1,6 +1,5 @@
 import { faStar, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Component, Input, OnInit, Output, EventEmitter, input, output } from '@angular/core';
-import { CrCzGearDataService } from '../services/cr-cz-gear-data/cr-cz-gear-data.service';
+import { Component, OnChanges, OnInit, SimpleChanges, input, output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { iCrCzGearItemCard } from '../models/cr-cz-gear-item-card';
 
@@ -14,16 +13,16 @@ export class CrCzGearListComponent implements OnInit {
   faStar = faStar;
   faPlus = faPlus;
 
-  dataList$: Observable<Array<iCrCzGearItemCard>>;
-  nameList$: Observable<Array<string>>;
   filterName: string = '';
   fitlerKeyword: string = '';
   filterCred: Array<number> = [10];
-  filterEB: number;
-  filterReleases: Array<string>;
-  currentFilterFaction: string;
+  filterEB: number | undefined;
+  filterReleases: Array<string> | undefined;
+  currentFilterFaction: string | undefined;
 
-  filterFaction= input<string>('');
+
+  gearList = input<Array<iCrCzGearItemCard>>();
+  filterFaction = input<string>('');
   teamFaction = input<string>('');
   unitKeywords = input<Array<string>>([]);
   totalStreetcred = input<number>(0);
@@ -32,19 +31,15 @@ export class CrCzGearListComponent implements OnInit {
 
   addGear = output<iCrCzGearItemCard>();
 
-  constructor(private gearDataService: CrCzGearDataService){}
-
   ngOnInit(): void {
     this.currentFilterFaction = this.filterFaction();
-    this.dataList$ = this.gearDataService.gearList;
     for( let i = 0; i < (this.totalStreetcred() + 1); i++) {
       this.filterCred.push(i);
     }
-
   }
 
 
-  setFaction($event): void {
+  setFaction($event: string): void {
     this.currentFilterFaction = $event;
   }
 

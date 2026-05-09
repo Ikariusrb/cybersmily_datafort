@@ -1,7 +1,4 @@
-
-
-@if(dataList$ | async; as gearList) {
-  <div class="row">
+<div class="row">
   <div class="col-3 col-md-1">
     <cs-cr-cz-faction-selector [selectedFaction]="currentFilterFaction"
   (selected)="setFaction($event)"></cs-cr-cz-faction-selector>
@@ -9,7 +6,7 @@
   <div class="col-9 col-md-5">
     <input type="search" class="w-100" placeholder="Search by name/title of gear" [(ngModel)]="filterName">
     <input type="search" class="w-100" placeholder="Search by keyword of gear" [(ngModel)]="fitlerKeyword">
-    <cs-cr-cz-source-selector [filter]="gearList | uniqueValues:'release'" (selectedSource)="filterOnRelease($event)"></cs-cr-cz-source-selector>
+    <cs-cr-cz-source-selector [filter]="gearList() | uniqueValues:'release'" (selectedSource)="filterOnRelease($event)"></cs-cr-cz-source-selector>
   </div>
   <div class="col-12 col-md-4">
     Cred:
@@ -36,7 +33,7 @@
   <div class="col-12">
     <div class="row">
       <div class="col-12 text-center px-0">
-        @for(gear of gearList |contains:'faction':[currentFilterFaction, 'universal']
+        @for(gear of gearList() |contains:'faction':[currentFilterFaction, 'universal']
           | contains:'name':filterName
           | contains:'keywords':fitlerKeyword
           | filter:'eb':filterEB
@@ -58,6 +55,3 @@
     </div>
   </div>
 </div>
-} @else {
-  <div>Gear list is missing.</div>
-}
