@@ -398,7 +398,7 @@
           <div class="col-12 text-capitalize text-small">Slots: {{vehicle.modSlots?.join(', ') || 'None'}}</div>
         </div>
       </div>
-      <div class="col-2 col-md-1">{{vehicle.eb}}eb</div>
+      <div class="col-2 col-md-1">{{vehicle.totalCost}}eb</div>
       <div class="col-2 col-md-1">
         <button title="Click to remove vehicle." class="csd-btn p-1" (click)="removeVehicle(vehicleIndex)">
           <fa-icon [icon]="faTrash" size="xl"></fa-icon>

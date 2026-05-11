@@ -1,5 +1,7 @@
+import { mainRoutes } from './../../datafort-routes';
 import { KeyValue } from "@angular/common";
 import { iCrCzActionToken } from "./cr-cz-action-token";
+import { iCrCzGearItemCard } from "./cr-cz-gear-item-card";
 
 export interface iCrCzVehicleData {
   name: string;
@@ -22,7 +24,9 @@ export interface iCrCzVehicleCard {
   hullTokens: Array<iCrCzActionToken>;
   seats: Array<KeyValue<string,Array<string>>>;
   modSlots: Array<string>;
+  mods: Array<iCrCzGearItemCard>;
   specialRules?: Array<KeyValue<string, string>>;
+  totalCost: number;
 }
 
 export class CrCzVehicleCard {
@@ -35,5 +39,10 @@ export class CrCzVehicleCard {
   seats: Array<KeyValue<string,Array<string>>> = [];
   modSlots: Array<string> = []  ;
   specialRules?: Array<KeyValue<string, string>>;
+  mods : Array<iCrCzGearItemCard> = [];
+  get totalCost(): number {
+    let cost = this.eb;
+    return cost;
+  }
 }
 

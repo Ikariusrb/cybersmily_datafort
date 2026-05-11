@@ -1,3 +1,4 @@
+import { CrCzSquad } from './../../models/cr-cz-squad';
 import { Injectable } from '@angular/core';
 import { iCrCzSquad } from '../../models/cr-cz-squad';
 import { jsPDF } from 'jspdf';
@@ -8,6 +9,7 @@ import {
 } from './../../../shared/enums/pdf-page-settings';
 import { iCrCzCharacterCard } from '../../models/cr-cz-character-card';
 import { iCrCzObjectiveCard } from '../../models/cr-cz-objective-card';
+import { iCrCzVehicleCard } from '../../models/cr-cz-vehicle-card';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +38,7 @@ export class CrCzArmyPdfService {
     return 'courier';
   }
 
-  generateCombatZoneArmyList(squad: iCrCzSquad, fileName: string): void {
+  private initializeDocument(): void {
     this._doc = new jsPDF({
       orientation: PdfPageOrientation.LANDSCAPE,
       format: 'a4',
@@ -46,21 +48,25 @@ export class CrCzArmyPdfService {
     const font = this.getFont(this._doc.getFontList());
     this._doc.setFont(font);
     this._doc.setFontSize(PdfFontSize.DEFAULT);
+  }
+
+  generateCombatZoneArmyList(squad: iCrCzSquad, fileName: string): void {
+    this.initializeDocument();
     let line: number = PdfPageSettings.MARGIN_TOP;
     let left: number = PdfPageSettings.MARGIN_LEFT + 1;
     // set the squad name
     line = this.createTitle(
       line,
       PdfPageSettings.MIDPAGE_LANDSCAPE,
-      `TEAM NAME: ${squad.name?.toUpperCase()}`
+      `TEAM NAME: ${squad.name?.toUpperCase()}`,
     );
     line = this.createTitle(
       line,
       PdfPageSettings.MIDPAGE_LANDSCAPE,
-      squad.faction?.toUpperCase()
+      squad.faction?.toUpperCase(),
     );
     const mercs = squad.units.filter(
-      (unit) => !unit.keywords.includes(squad.faction) && unit.isMerc
+      (unit) => !unit.keywords.includes(squad.faction) && unit.isMerc,
     );
     const gearCount = squad.units.reduce((a, b) => a + b.gearCards.length, 0);
     const leaders = squad.units.filter((unit) => unit.isLeader);
@@ -74,34 +80,20 @@ export class CrCzArmyPdfService {
       leaders.length,
       mercs.length,
       gearCount,
-      squad.units.length
+      squad.units.length,
     );
     // list the units and their gear/programs
-    line += 5;
-    let pageTop = line;
-    line = this.createTeamMemberHeader(line, left);
-    squad.units.forEach((unit) => {
-      // check to see if a new page is required.
-      if (this.getLineHeightOfUnit(unit) + line > PdfPageSettings.PAGE_WIDTH) {
-        left =
-          left === PdfPageSettings.MARGIN_LEFT
-            ? PdfPageSettings.MIDPAGE_LANDSCAPE
-            : PdfPageSettings.MARGIN_LEFT;
-        this._doc.addPage();
-        line = pageTop;
-        line = this.createTeamMemberHeader(line, left);
-      }
+    line = this.createTeamUnitSection(squad, line + 5, left);
 
-      line = this.createUnitRow(line, left, unit, squad.faction);
-    });
+    line = this.createTeamVehiclesSection(squad, line + 5, left);
 
     line += 3;
-    const objectivesHeight = 7 + (squad.objectives?.length * 4);
+    const objectivesHeight = 7 + squad.objectives?.length * 4;
 
     if (line + objectivesHeight > PdfPageSettings.PAGE_WIDTH) {
-      if (left === PdfPageSettings.MARGIN_LEFT ) {
+      if (left === PdfPageSettings.MARGIN_LEFT) {
         left = PdfPageSettings.MIDPAGE_LANDSCAPE;
-        line = pageTop;
+        line = PdfPageSettings.MARGIN_TOP;
       } else {
         this._doc.addPage();
         left = PdfPageSettings.MARGIN_LEFT;
@@ -139,7 +131,7 @@ export class CrCzArmyPdfService {
     totalLeaders: number,
     totalMercs: number,
     totalGear: number,
-    totalUnits: number
+    totalUnits: number,
   ): number {
     this._doc.setFontSize(PdfFontSize.DEFAULT);
     let output = `Total Units: ${totalUnits}`;
@@ -163,7 +155,7 @@ export class CrCzArmyPdfService {
     this._doc.setFontSize(PdfFontSize.SM);
     this._doc.setFont(PdfPageSettings.DEFAULT_FONT, 'italic');
     this._doc.text('Name', leftMargin, line);
-    this._doc.text(`SC`, leftMargin + 92, line), { align: 'center' };
+    (this._doc.text(`SC`, leftMargin + 92, line), { align: 'center' });
     this._doc.text(`EB`, leftMargin + 103, line, { align: 'center' });
     this._doc.text('Keywords', leftMargin + 110, line);
     this._doc.setFont(PdfPageSettings.DEFAULT_FONT, 'normal');
@@ -184,8 +176,26 @@ export class CrCzArmyPdfService {
     return height;
   }
 
-  private createTeamMemberHeader(line: number, left: number): number {
-    line = this.createTitle(line, left + 35,  'TEAM MEMBERS');
+  private createTeamUnitSection(
+    squad: iCrCzSquad,
+    line: number,
+    left: number,
+  ): number {
+    line = this.createTeamMemberHeader(squad, line, left);
+    squad.units.forEach((unit) => {
+      // check to see if a new page is required.
+      line = this.checkNewPage(this.getLineHeightOfUnit(unit), line);
+      if (line === PdfPageSettings.MARGIN_TOP) {
+        line = this.createTeamMemberHeader(squad, line, left);
+      }
+      line = this.createUnitRow(line, left, unit, squad.faction);
+    });
+    return line;
+  }
+
+  private createTeamMemberHeader(squad:iCrCzSquad,line: number, left: number): number {
+    const cost = squad.units.reduce((a, b) => a + b.totalCost, 0);
+    line = this.createTitle(line, left + 55, 'TEAM MEMBERS - Total Cost: ' + cost + 'eb');
     line += 2;
     line = this.createUnitHeader(line, left);
     return line;
@@ -195,7 +205,7 @@ export class CrCzArmyPdfService {
     line: number,
     leftMargin: number,
     unit: iCrCzCharacterCard,
-    squadFaction: string
+    squadFaction: string,
   ): number {
     this._doc.setFontSize(PdfFontSize.DEFAULT);
     let unitName = unit.name?.toUpperCase();
@@ -205,7 +215,7 @@ export class CrCzArmyPdfService {
       this._doc.text(
         `** [MERC - ${squadFaction.toUpperCase()}] **`,
         leftMargin + 5,
-        line + 3
+        line + 3,
       );
       this._doc.setFontSize(PdfFontSize.DEFAULT);
     }
@@ -257,10 +267,85 @@ export class CrCzArmyPdfService {
     return line;
   }
 
+  private createTeamVehiclesSection(
+    squad: iCrCzSquad,
+    line: number,
+    left: number,
+  ): number {
+    line = this.createVehicleHeader(squad, line, left);
+    squad?.vehicles?.forEach((vehicle) => {
+      // check to see if a new page is required.
+      line = this.checkNewPage(this.getLineHeightOfVehicle(vehicle), line);
+      if (line === PdfPageSettings.MARGIN_TOP) {
+        line = this.createVehicleHeader(squad, line,left);
+      }
+
+      line = this.createVehicleRow(line, left, vehicle);
+    });
+    return line;
+  }
+
+  private createVehicleHeader(squad: iCrCzSquad,line: number, left: number): number {
+    const totalCost = squad.vehicles?.reduce((a, b) => a + b.totalCost, 0) ?? 0;
+    line = this.createTitle(line, left + 55, 'TEAM VEHICLES - Total Cost: ' + totalCost + 'eb');
+    line += 2;
+    line = this.createUnitHeader(line, left);
+    return line;
+  }
+  private getLineHeightOfVehicle(unit: iCrCzVehicleCard): number {
+    let height = 12;
+    if (unit?.mods?.length > 0) {
+      height += unit.mods.length * 5;
+    }
+    return height;
+  }
+
+  private createVehicleRow(
+    line: number,
+    leftMargin: number,
+    vehicle: iCrCzVehicleCard
+  ): number { this._doc.setFontSize(PdfFontSize.DEFAULT);
+    let unitName = vehicle.name?.toUpperCase();
+    this._doc.text(unitName, leftMargin, line);
+    this._doc.text(``, leftMargin + 90, line);
+    this._doc.text(`${vehicle.eb.toString()}eb`, leftMargin + 107, line, {
+      align: 'right',
+    });
+    this._doc.text(vehicle.keywords.join(', '), leftMargin + 110, line);
+    line += 8;
+    this._doc.setFontSize(PdfFontSize.SM);
+    if (vehicle.mods.length > 0) {
+      this._doc.text('Mods', leftMargin + 3, line);
+      vehicle.mods.forEach((gear) => {
+        this._doc.text(gear.name?.toUpperCase(), leftMargin + 16, line);
+        this._doc.text(``, leftMargin + 90, line);
+        this._doc.text(`+${gear.eb}eb`, leftMargin + 107, line, {
+          align: 'right',
+        });
+        this._doc.text(`${gear.rarity} rarity`, leftMargin + 110, line);
+        line += 3;
+      });
+      line += 1;
+    }
+    this._doc.text(`Total Cost: `, leftMargin + 90, line, { align: 'right' });
+    this._doc.text(`${vehicle.totalCost}eb`, leftMargin + 107, line, {
+      align: 'right',
+    });
+    line += 1;
+    this._doc.setLineWidth(0.5);
+    this._doc.setDrawColor('#AAAAAA');
+    this._doc.line(leftMargin, line, leftMargin + 135, line);
+    this._doc.setDrawColor('black');
+    this._doc.setFontSize(PdfFontSize.DEFAULT);
+    this._doc.setFont(PdfPageSettings.DEFAULT_FONT, 'normal');
+    line += 4;
+    return line;
+  }
+
   private createObjectivetRow(
     line: number,
     leftMargin: number,
-    objective: iCrCzObjectiveCard
+    objective: iCrCzObjectiveCard,
   ): number {
     this._doc.setFontSize(PdfFontSize.DEFAULT);
     this._doc.text(objective.name?.toUpperCase(), leftMargin, line);
@@ -269,6 +354,14 @@ export class CrCzArmyPdfService {
     this._doc.setFontSize(PdfFontSize.DEFAULT);
     this._doc.setFont(PdfPageSettings.DEFAULT_FONT, 'normal');
     line += 5;
+    return line;
+  }
+
+  private checkNewPage(newLine: number, line: number): number {
+    if ((newLine + line) > PdfPageSettings.PAGE_WIDTH) {
+      this._doc.addPage();
+      return PdfPageSettings.MARGIN_TOP;
+    }
     return line;
   }
 }

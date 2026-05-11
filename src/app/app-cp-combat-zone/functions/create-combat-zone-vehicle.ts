@@ -1,4 +1,5 @@
 import { CrCzVehicleCard } from "../models/cr-cz-vehicle-card";
+import { CreateCombatZoneGear } from "./create-combat-zone-gear";
 
 export const CreateCombatZoneVehicle = (param:any) :CrCzVehicleCard => {
   const vehicle = new CrCzVehicleCard();
@@ -21,5 +22,6 @@ export const CreateCombatZoneVehicle = (param:any) :CrCzVehicleCard => {
   vehicle.seats = param?.seats ? [...param.seats] : [];
   vehicle.modSlots = param?.modSlots ? [...param.modSlots] : [];
   vehicle.specialRules = param?.specialRules ? [...param.specialRules] : [];
+  vehicle.mods = param?.mods ? param.mods.map(gear => CreateCombatZoneGear(gear)) : [];
   return vehicle;
 }
