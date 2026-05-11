@@ -1,11 +1,13 @@
 import { iCrCzObjectiveCard } from "./cr-cz-objective-card";
 import { iCrCzCharacterCard  } from "./cr-cz-character-card";
+import { iCrCzVehicleCard } from "./cr-cz-vehicle-card";
 
 export interface iCrCzSquad {
   name: string;
   units: Array<iCrCzCharacterCard>;
   faction: string;
   luck: number;
+  vehicles?: Array<iCrCzVehicleCard>;
   objectives: Array<iCrCzObjectiveCard>;
   scenarioObjectives: Array<iCrCzObjectiveCard>;
   notes?: string;
@@ -24,6 +26,7 @@ export class CrCzSquad implements iCrCzSquad {
   units: Array<iCrCzCharacterCard>;
   luck: number;
   faction: string;
+  vehicles: Array<iCrCzVehicleCard>;
   objectives: Array<iCrCzObjectiveCard>;
   scenarioObjectives: Array<iCrCzObjectiveCard>;
   payVeterans: boolean;
@@ -34,6 +37,7 @@ export class CrCzSquad implements iCrCzSquad {
       return 0;
     }
     let cost = this.units.reduce((a,b) => a + b.totalCost, 0);
+    cost += this.vehicles.reduce((a,b) => a + b.eb, 0);
     if(this.payVeterans) {
       cost += this.units.reduce((a,b) => a + (b.cred *  5) , 0);
     }

@@ -3,6 +3,8 @@ import { CrCzSquad, iCrCzSquad } from "../models/cr-cz-squad";
 import { iCrCzCharacterCard } from "../models/cr-cz-character-card";
 import { CreateCombatZoneObjective } from "./create-combat-zone-objective";
 import { CreateCombatZoneCharacterFromObject } from "./create-combat-zone-character-from-object";
+import { iCrCzVehicleCard } from "../models/cr-cz-vehicle-card";
+import { CreateCombatZoneVehicle } from "./create-combat-zone-vehicle";
 
 
 export function CreateCombatZoneTeam(param?: iCrCzSquad): CrCzSquad {
@@ -10,6 +12,7 @@ export function CreateCombatZoneTeam(param?: iCrCzSquad): CrCzSquad {
   team.name = param?.name || "new squad";
   team.units = param?.units?.map(unit => CreateCombatZoneCharacterFromObject(unit)) || new Array<iCrCzCharacterCard>();
   team.faction = param?.faction || '';
+  team.vehicles = param?.vehicles?.map(vehicle => CreateCombatZoneVehicle(vehicle)) || new Array<iCrCzVehicleCard>();
   team.luck = param?.luck || 3;
   team.payVeterans = param?.payVeterans || false;
   team.objectives = param?.objectives?.map(obj => CreateCombatZoneObjective(obj)) || new Array<iCrCzObjectiveCard>();

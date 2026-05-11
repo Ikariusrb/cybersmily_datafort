@@ -1,1 +1,17 @@
-<p>cr-cz-vehicle-list works!</p>
+@if(vehicleList$ | async; as vehicleList) {
+<div class="row">
+  <div class="col-12">
+    <div class="row">
+    @for(vehicle of vehicleList; track $index) {
+          <div [ngClass]="{'col-12 p-1  csd-btn': true, 'col-md-4 col-lg-6': vehicle.cards < 3,'col-lg-6': vehicle.cards > 2 }" (click)="addVehicle(vehicle)" >
+            <div [ngClass]=" {'bg-warning': vehicleCount(vehicle.name) > 0, 'p-1 rounded': true}">
+            <div class="d-inline-block w-10 m-0 text-center text-xlarge fw-bold">{{vehicleCount(vehicle.name)}}x</div>
+            <img class="unit-image w-90 m-0 rounded" src="img/cz/vehicles/{{vehicle.name.replaceAll(' ', '_').toLowerCase()}}.jpg" alt="{{vehicle.name}}">
+            </div>
+          </div>
+   }
+   </div>
+
+  </div>
+</div>
+}

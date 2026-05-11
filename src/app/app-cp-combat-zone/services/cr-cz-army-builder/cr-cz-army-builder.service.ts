@@ -14,6 +14,7 @@ import { CRCZ_LOCAL_STORAGE_KEY } from '../../models/cr-cz-types';
 import { iCrCzObjectiveCard } from '../../models/cr-cz-objective-card';
 import { CreateCombatZoneCharacterFromObject } from '../../functions/create-combat-zone-character-from-object';
 import { CreateCombatZoneTeam } from '../../functions/create-combat-zone-team';
+import { iCrCzVehicleCard } from '../../models/cr-cz-vehicle-card';
 
 @Injectable({
   providedIn: 'root',
@@ -24,65 +25,107 @@ export class CrCzArmyBuilderService {
   >([]);
   army: Observable<Array<iCrCzSquad>> = this._army.asObservable();
 
+  /**
+   * Load saved army from local storage when service initializes.
+   * If stored squad data exists, normalize it into team objects and emit it.
+   */
   constructor(private localStorage: LocalStorageManagerService) {
     if (this.localStorage.hasKey(CRCZ_LOCAL_STORAGE_KEY)) {
       let army = this.localStorage.retrive<Array<iCrCzSquad>>(
-        CRCZ_LOCAL_STORAGE_KEY
+        CRCZ_LOCAL_STORAGE_KEY,
       );
       this._army.next(army.map((squad) => CreateCombatZoneTeam(squad)));
     }
   }
 
+  /**
+   * Persist the current army state and broadcast it to subscribers.
+   * Normalizes each squad to a combat zone team object before saving.
+   */
   private saveArmy(army: Array<iCrCzSquad>): void {
     this._army.next(army.map((squad) => CreateCombatZoneTeam(squad)));
     this.localStorage.store<Array<iCrCzSquad>>(CRCZ_LOCAL_STORAGE_KEY, army);
   }
 
+  /**
+   * Replace the current army with imported data and report success.
+   */
   importArmy(army: Array<iCrCzSquad>): Observable<boolean> {
     this.saveArmy(army);
     return of(army.length === this._army.getValue().length);
   }
 
+  /**
+   * Return a single squad by index as an observable.
+   */
   getSquad(squadIndex: number): Observable<iCrCzSquad> {
     return this.army.pipe(
       take(1),
-      map((army) => army[squadIndex])
+      map((army) => army[squadIndex]),
     );
   }
 
+  /**
+   * Add a new squad to the army and persist the updated army.
+   */
   addSquad(squad: iCrCzSquad): void {
     let army = [...this._army.getValue()];
-    army.push( CreateCombatZoneTeam(squad));
+    army.push(CreateCombatZoneTeam(squad));
     this.saveArmy(army);
   }
 
+  /**
+   * Remove a squad by index and persist the updated army.
+   */
   removeSquad(squadIndex: number): void {
     let army = [...this._army.getValue()];
     army.splice(squadIndex, 1);
     this.saveArmy(army);
   }
 
-  addScenarioObjective(squadIndex: number, objective: iCrCzObjectiveCard): void {
+  /**
+   * Add a scenario objective to the squad and remove it from available objectives.
+   */
+  addScenarioObjective(
+    squadIndex: number,
+    objective: iCrCzObjectiveCard,
+  ): void {
     let army = [...this._army.getValue()];
     army[squadIndex].objectives.push(objective);
-    const index = army[squadIndex].scenarioObjectives.findIndex(obj => obj.name === objective.name);
+    const index = army[squadIndex].scenarioObjectives.findIndex(
+      (obj) => obj.name === objective.name,
+    );
     army[squadIndex].scenarioObjectives.splice(index, 1);
     this.saveArmy(army);
   }
 
+  /**
+   * Remove a previously selected objective from the squad by matching name.
+   */
   removeObjective(squadIndex: number, objective: iCrCzObjectiveCard): void {
     let army = [...this._army.getValue()];
-    let objectiveIndex = army[squadIndex].objectives.findIndex(obj => obj.name === objective.name);
+    let objectiveIndex = army[squadIndex].objectives.findIndex(
+      (obj) => obj.name === objective.name,
+    );
     army[squadIndex].objectives.splice(objectiveIndex, 1);
     this.saveArmy(army);
   }
 
-  updateScenarioObjectives(squadIndex: number, objectives: Array<iCrCzObjectiveCard>): void {
+  /**
+   * Overwrite the squad's list of scenario objectives and persist the change.
+   */
+  updateScenarioObjectives(
+    squadIndex: number,
+    objectives: Array<iCrCzObjectiveCard>,
+  ): void {
     let army = [...this._army.getValue()];
     army[squadIndex].scenarioObjectives = [...objectives];
     this.saveArmy(army);
   }
 
+  /**
+   * Reset action token usage for every unit in the squad.
+   */
   inspireTeam(squadIndex: number): void {
     let army = [...this._army.getValue()];
     army[squadIndex].units = army[squadIndex].units.map((unit) => {
@@ -95,29 +138,44 @@ export class CrCzArmyBuilderService {
     this.saveArmy(army);
   }
 
+  /**
+   * Change the squad's luck total by the supplied amount.
+   */
   updateSquadLuck(squadIndex: number, amount: number): void {
     let army = [...this._army.getValue()];
     army[squadIndex].luck += amount;
     this.saveArmy(army);
   }
 
+  /**
+   * Toggle whether the squad is paying veteran costs and save the result.
+   */
   updateSquadVeteranCost(squadIndex: number): void {
     let army = [...this._army.getValue()];
     army[squadIndex].payVeterans = !army[squadIndex].payVeterans;
     this.saveArmy(army);
   }
 
-  getUnit(squadIndex: number, unitIndex: number): Observable<iCrCzCharacterCard> {
+  /**
+   * Return a single unit from the squad by index as an observable.
+   */
+  getUnit(
+    squadIndex: number,
+    unitIndex: number,
+  ): Observable<iCrCzCharacterCard> {
     return this.army.pipe(
       take(1),
-      map((army) => army[squadIndex].units[unitIndex])
+      map((army) => army[squadIndex].units[unitIndex]),
     );
   }
 
+  /**
+   * Create and add a new unit to a squad based on selected unit data and rank.
+   */
   addUnit(
     armyIndex: number,
     unit: iCrCzCharacterCardData,
-    streetCred: number
+    streetCred: number,
   ): void {
     let army = [...this._army.getValue()];
     let newUnit: CrCzCharacter = new CrCzCharacter();
@@ -127,7 +185,7 @@ export class CrCzArmyBuilderService {
     const chosenRank = unit.ranks.filter((rank) => rank.cred === streetCred)[0];
     if (chosenRank) {
       newUnit.keywords = [...unit.keywords];
-      if(chosenRank?.keywords){
+      if (chosenRank?.keywords) {
         newUnit.keywords.push(...chosenRank.keywords);
       }
 
@@ -151,55 +209,72 @@ export class CrCzArmyBuilderService {
       army[armyIndex].units.push(newUnit);
       this.saveArmy(army);
     }
-
   }
 
+  /**
+   * Check whether a squad has a unit with the given name and street cred.
+   */
   hasUnit(
     squadIndex: number,
     unitName: string,
-    unitStreetcred: number
+    unitStreetcred: number,
   ): boolean {
     let army = this._army.getValue();
     return army[squadIndex]?.units.some(
       (unit: iCrCzCharacterCard) =>
-        unit?.name === unitName && unit?.cred == unitStreetcred
+        unit?.name === unitName && unit?.cred == unitStreetcred,
     );
   }
 
+  /**
+   * Check whether a squad contains a specialist unit by name.
+   */
   hasSpecialist(squadIndex: number, unitName: string): boolean {
     let army = this._army.getValue();
     return army[squadIndex]?.units.some(
       (unit: iCrCzCharacterCard) =>
-        unit?.name === unitName && unit?.keywords.includes('specialist')
+        unit?.name === unitName && unit?.keywords.includes('specialist'),
     );
   }
 
+  /**
+   * Check whether any unit in the squad has the leader keyword.
+   */
   hasLeader(squadIndex: number): boolean {
     let army = this._army.getValue();
     return army[squadIndex]?.units.some((unit: iCrCzCharacterCard) =>
-      unit?.keywords.includes('leader')
+      unit?.keywords.includes('leader'),
     );
   }
 
+  /**
+   * Count how many leader units are present in the squad.
+   */
   leaderCount(squadIndex: number): number {
     let army = this._army.getValue();
     return army[squadIndex]?.units.filter((unit: iCrCzCharacterCard) =>
-      unit?.keywords.includes('leader')
+      unit?.keywords.includes('leader'),
     ).length;
   }
 
+  /**
+   * Count units that match the specified name and street cred.
+   */
   countOfUnit(
     squadIndex: number,
     unitName: string,
-    unitStreetcred: number
+    unitStreetcred: number,
   ): number {
     let army = this._army.getValue();
     return army[squadIndex]?.units.filter(
       (unit: CrCzCharacter) =>
-        unit?.name === unitName && unit?.cred == unitStreetcred
+        unit?.name === unitName && unit?.cred == unitStreetcred,
     ).length;
   }
 
+  /**
+   * Build a list of all gear item names for the squad's units.
+   */
   getSquadGearList(squadIndex: number): Observable<Array<string>> {
     return this.army.pipe(
       map((army) => {
@@ -211,25 +286,57 @@ export class CrCzArmyBuilderService {
           }
         });
         return list;
-      })
+      }),
     );
   }
 
+  /**
+   * Remove a unit from the squad by index and persist the updated army.
+   */
   removeUnit(armyIndex: number, unitIndex: number): void {
     let army = this._army.getValue();
     army[armyIndex].units.splice(unitIndex, 1);
     this.saveArmy(army);
   }
 
-  updateUnit(squadIndex: number, unitIndex: number, unit: iCrCzCharacterCard): void {
+  /**
+   * Replace a squad unit with a normalized character object and save.
+   */
+  updateUnit(
+    squadIndex: number,
+    unitIndex: number,
+    unit: iCrCzCharacterCard,
+  ): void {
     let army = this._army.getValue();
-    army[squadIndex].units[unitIndex] = CreateCombatZoneCharacterFromObject(unit);
+    army[squadIndex].units[unitIndex] =
+      CreateCombatZoneCharacterFromObject(unit);
     this.saveArmy(army);
   }
 
+  /**
+   * Update the squad notes text and persist it.
+   */
   updateSquadNotes(squadIndex: number, notes: string): void {
     let army = this._army.getValue();
     army[squadIndex].notes = notes;
+    this.saveArmy(army);
+  }
+
+  /**
+   * Add a vehicle to the squad. This method mutates a shallow copy but does not persist.
+   */
+  addVehicle(squadIndex: number, vehicle: iCrCzVehicleCard) {
+    let army = [...this._army.getValue()];
+    army[squadIndex].vehicles?.push(vehicle);
+    this.saveArmy(army);
+  }
+
+  /**
+   * Remove a vehicle from the squad by index. This method mutates a shallow copy but does not persist.
+   */
+  removeVehicle(squadIndex: number, vehicleIndex: number) {
+    let army = [...this._army.getValue()];
+    army[squadIndex].vehicles?.splice(vehicleIndex, 1);
     this.saveArmy(army);
   }
 }

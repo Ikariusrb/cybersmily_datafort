@@ -1,5 +1,5 @@
-import { faTrash, faStar, faPlus, faRedo, faFilePdf, faChevronRight, faChevronLeft, faBullseye, faUsersLine, faFileLines, faUserPlus, faDice } from '@fortawesome/free-solid-svg-icons';
-import { Component, Input, OnChanges, OnInit, TemplateRef, input, output } from '@angular/core';
+import { faTrash, faStar, faPlus,faCarSide, faRedo, faFilePdf, faChevronRight, faChevronLeft, faBullseye, faUsersLine, faFileLines, faUserPlus, faDice } from '@fortawesome/free-solid-svg-icons';
+import { Component,  OnChanges, OnInit, TemplateRef, input, output } from '@angular/core';
 import { iCrCzSquad } from '../models/cr-cz-squad';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { CrCzArmyBuilderService } from '../services/cr-cz-army-builder/cr-cz-army-builder.service';
@@ -8,6 +8,7 @@ import { CrCzArmyPdfService } from '../services/cr-cz-army-pdf/cr-cz-army-pdf.se
 import { TabDirective } from 'ngx-bootstrap/tabs';
 import { iCrCzObjectiveCard } from '../models/cr-cz-objective-card';
 import { CrCzScenarioObjectivesGeneratorService } from '../services/cr-cz-scenario-objectives-generator/cr-cz-scenario-objectives-generator.service';
+import { iCrCzVehicleCard } from '../models/cr-cz-vehicle-card';
 
 @Component({
     selector: 'cs-cr-cz-squad-form',
@@ -29,6 +30,7 @@ export class CrCzSquadFormComponent implements OnInit, OnChanges {
   faFileLines = faFileLines;
   faUserPlus = faUserPlus;
   faDice = faDice;
+  faCarSide = faCarSide;
 
   squadIndex = input<number>();
   delete = output<number>();
@@ -130,6 +132,14 @@ export class CrCzSquadFormComponent implements OnInit, OnChanges {
 
   removeUnit(unitIndex: number): void {
     this.combatzoneArmyBuilder.removeUnit(this.squadIndex(), unitIndex);
+  }
+
+  addVehicle(vehicle: iCrCzVehicleCard): void {
+    this.combatzoneArmyBuilder.addVehicle(this.squadIndex(), vehicle);
+  }
+
+  removeVehicle(vehicleIndex: number): void {
+    this.combatzoneArmyBuilder.removeVehicle(this.squadIndex(), vehicleIndex);
   }
 
   updateLuck(amount: number): void {

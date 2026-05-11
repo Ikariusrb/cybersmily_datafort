@@ -65,11 +65,18 @@
       <div class="row mt-1">
         <div class="col-11 px-0 mx-0">
           <tabset type="pills" [justified]="true">
-            <tab customClass="customClass" (selectTab)="setTab($event, 'team')">
+            <tab customClass="customClass" class="p-0" (selectTab)="setTab($event, 'team')">
               <ng-template tabHeading>
                 <div class="text-small text-uppercase d-inline-block" title="Team Members">
                   <fa-icon [icon]="faUsersLine" size="xl"></fa-icon> {{squad?.units.length}}
                 </div>
+                @if(selectedTab === 'team') {
+                <button title="Add Team Member"
+                  class="float-end d-inline-block csd-btn m-0 px-4 py-0 border border-secondary rounded"
+                  (click)="showModal(unitListings, squad?.faction)">
+                  <fa-icon [icon]="faUserPlus" size="xs" class="m-0"></fa-icon>
+                </button>
+                }
               </ng-template>
               @for(unit of squad?.units | orderby: [{prop: 'isLeader', desc: true},{prop: 'isGonk', desc: false},{prop:
               'name',desc: false}]; track $index; let unitIndex = $index) {
@@ -77,11 +84,39 @@
                 [ngTemplateOutletContext]="{unit: unit, unitIndex: unitIndex, teamFaction: squad?.faction}"></ng-container>
               }
             </tab>
+            <tab customClass="customClass" (selectTab)="setTab($event, 'vehicles')">
+              <ng-template tabHeading>
+                <div class="text-small text-uppercase d-inline-block" title="Team Vehicles">
+                  <fa-icon [icon]="faCarSide" size="xl"></fa-icon> {{squad?.vehicles.length}}
+                </div>
+                @if(selectedTab === 'vehicles') {
+                <button title="Add Vehicle"
+                  class="float-end d-inline-block csd-btn  m-0 px-4 py-0  border border-secondary rounded"
+                  (click)="showModal(vehicleListings, squad?.faction)">
+                  <fa-icon [icon]="faCarSide"></fa-icon>
+                  <fa-icon [icon]="faPlus" size="xs"></fa-icon>
+                </button>
+                }
+              </ng-template>
+              @for(vehicle of squad?.vehicles | orderby: [{prop: 'name', desc: false}]; track $index; let vehicleIndex
+              = $index) {
+              <ng-container [ngTemplateOutlet]="vehicleRow"
+                [ngTemplateOutletContext]="{vehicle: vehicle, vehicleIndex: vehicleIndex, teamFaction: squad?.faction}"></ng-container>
+              }
+            </tab>
             <tab customClass="customClass" (selectTab)="setTab($event, 'objectives')">
               <ng-template tabHeading>
-                <div class="text-small text-uppercase" title="Objectives">
+                <div class="text-small text-uppercase d-inline-block" title="Objectives">
                   <fa-icon [icon]="faBullseye" size="xl" /> ({{squad?.objectives.length}})
                 </div>
+                @if(selectedTab === 'objectives') {
+                <button title="Add Objective"
+                  class="float-end d-inline-block csd-btn m-0 px-4 py-0 border border-secondary rounded"
+                  (click)="showObjectiveModal(objectiveListings, squad?.objectives, squad?.faction)">
+                  <fa-icon [icon]="faBullseye"></fa-icon>
+                  <fa-icon [icon]="faPlus" size="xs"></fa-icon>
+                </button>
+                }
               </ng-template>
               <accordion>
                 <accordion-group>
@@ -114,11 +149,12 @@
                   </div>
                   <div>
                     <div class="row">
-                      @for(objective of squad.scenarioObjectives  | orderby: [{prop: 'name', desc: false}]; track $index) {
+                      @for(objective of squad.scenarioObjectives | orderby: [{prop: 'name', desc: false}]; track $index)
+                      {
                       <ng-container [ngTemplateOutlet]="randomObjectiveCardRow"
                         [ngTemplateOutletContext]="{objective: objective, squadIndex: squadIndex()}">
                       </ng-container>
-                    }
+                      }
                     </div>
                   </div>
                 </accordion-group>
@@ -141,19 +177,6 @@
           </tabset>
         </div>
         <div class="col-1 pt-1">
-          @if(selectedTab === 'team') {
-          <button title="Add Team Member" class="float=end d-inline-block csd-btn p-2 border border-secondary rounded"
-            (click)="showModal(unitListings, squad?.faction)">
-            <fa-icon [icon]="faUserPlus"></fa-icon>
-          </button>
-          }
-          @if(selectedTab === 'objectives') {
-          <button title="Add Objective" class="float=end d-inline-block csd-btn p-2 border border-secondary rounded"
-            (click)="showObjectiveModal(objectiveListings, squad?.objectives, squad?.faction)">
-            <fa-icon [icon]="faBullseye"></fa-icon>
-            <fa-icon [icon]="faPlus" size="xs"></fa-icon>
-          </button>
-          }
         </div>
       </div>
     </div>
@@ -162,13 +185,17 @@
   <ng-template #unitRow let-unit="unit" let-unitIndex="unitIndex" let-teamFaction="teamFaction">
     <div
       [ngClass]="{'row mt-1 py-1 csd-btn':true,'wrong-faction rounded': (!unit.keywords.includes(teamFaction) && !unit.keywords.includes('merc'))}">
-      <div class="col-1 text-capitalize ps-0 text-end">
+      <!-- <div class="col-2 text-capitalize p-0 text-end">
         @if(unit.isDead) {
         <img alt="Death icon" class="csd-img-icon me-1" src="img/cz/death_icon.png">
         } @else {
-        <img alt="Unit card for {{unit.name}}" class="csd-img-icon me-1"
+        <img alt="Unit card for {{unit.name}}" class="character-card-img" title="{{unit.name}}"
           src="img/cz/units/{{unit.name?.replaceAll(' ', '_')}}_{{unit.cred}}.jpg">
         }
+      </div>
+    -->
+      <div class="col-1 p-0 text-center">
+        <div style="display:inline-block;width:100%;aspect-ratio: 1/1;background-image: url(img/cz/units/{{unit.name?.replaceAll(' ', '_')}}_{{unit.cred}}.jpg);background-position: 45% 20%;background-size: 200%;border-radius:80%"></div>
       </div>
       <div class="col-8 col-md-9 text-capitalize" (click)="showUnitModal(unitForm, unit.name, unitIndex, teamFaction)">
         <div class="row">
@@ -321,6 +348,62 @@
     <div class="modal-body">
       <cs-cr-cz-objective-list [squadIndex]="squadIndex()" [filterFaction]="faction"
         [ownedObjectives]="selectedObjectives"></cs-cr-cz-objective-list>
+    </div>
+  </ng-template>
+
+  <ng-template #vehicleListings>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Vehicle Listing</h4>
+      <button title="Close" type="button" class="btn-close close pull-right" aria-label="Close"
+        (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <cs-cr-cz-vehicle-list [squadIndex]="squadIndex()" [ownedVehicles]="squad.vehicles" (add)="addVehicle($event)"
+        [faction]="faction"></cs-cr-cz-vehicle-list>
+    </div>
+  </ng-template>
+
+  <ng-template #vehicleRow let-vehicle="vehicle" let-vehicleIndex="vehicleIndex" let-teamFaction="teamFaction">
+    <div class="row mt-1 py-1">
+      <div class="col-2 col-md-1 text-capitalize ps-0 csd-btn">
+        <div [ngStyle]="{
+          'display': 'inline-block',
+          'width': '100%',
+          'aspect-ratio': '1/1',
+          'background-image': 'url(img/cz/vehicles/' + vehicle.name?.replaceAll(' ', '_') + '.jpg)',
+          'background-position': (vehicle.cards > 2) ? '45% 25%' : '85% 25%',
+          'background-size': (vehicle.cards  > 2) ? '450%' : '280%',
+          'border-radius': '80%'}"></div>
+      </div>
+      <div class="col-6 col-md-9">
+        <div class="row">
+          <div class="col-12 col-md-5 col-lg-4 text-uppercase">{{vehicle.name}}</div>
+          <div class="col-12 col-md-4 text-capitalize fst-italic text-small">{{vehicle.keywords?.join(', ')}}</div>
+          <div class="col-12 col-md-4 text-capitalize fst-italic text-small">
+            <img alt="Armor {{vehicle.armor}}" src="img/cz/shield_icon.png" class="csd-img-icon">
+            <span style="margin-left:-20px;margin-right:20px;" class="text-white text-large pt-2 ftw-bold">{{vehicle.armor}}</span>
+             @for(token of vehicle?.hullTokens; track $index) {
+            <img alt="Hull Token icon {{token.type === 'g'?'Green': token.type === 'y'?'Yellow': 'Red'}}" class="csd-img-icon"
+              src="img/cz/hull_{{token.type}}.png">
+            }
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-capitalize text-small">Seats: {{vehicle.seats?.join(', ')}}</div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-capitalize text-small">Slots: {{vehicle.modSlots?.join(', ') || 'None'}}</div>
+        </div>
+      </div>
+      <div class="col-2 col-md-1">{{vehicle.eb}}eb</div>
+      <div class="col-2 col-md-1">
+        <button title="Click to remove vehicle." class="csd-btn p-1" (click)="removeVehicle(vehicleIndex)">
+          <fa-icon [icon]="faTrash" size="xl"></fa-icon>
+        </button>
+      </div>
     </div>
   </ng-template>
 

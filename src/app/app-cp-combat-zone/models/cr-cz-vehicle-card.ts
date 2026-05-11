@@ -1,8 +1,10 @@
 import { KeyValue } from "@angular/common";
+import { iCrCzActionToken } from "./cr-cz-action-token";
 
-export interface iCrCzVehicleCard {
+export interface iCrCzVehicleData {
   name: string;
-  keywords: Array<string>;
+  cards: number;
+  keywords: string;
   eb: number;
   armor: number;
   hullTokens: Array<string>;
@@ -10,3 +12,28 @@ export interface iCrCzVehicleCard {
   modSlots: Array<string>;
   specialRules?: Array<KeyValue<string, string>>;
 }
+
+export interface iCrCzVehicleCard {
+  name: string;
+  cards: number;
+  keywords: Array<string>;
+  eb: number;
+  armor: number;
+  hullTokens: Array<iCrCzActionToken>;
+  seats: Array<KeyValue<string,Array<string>>>;
+  modSlots: Array<string>;
+  specialRules?: Array<KeyValue<string, string>>;
+}
+
+export class CrCzVehicleCard {
+  name: string = '';
+  cards: number = 0;
+  keywords: Array<string> = [];
+  eb: number = 0;
+  armor: number = 0;
+  hullTokens: Array<iCrCzActionToken> = [];
+  seats: Array<KeyValue<string,Array<string>>> = [];
+  modSlots: Array<string> = []  ;
+  specialRules?: Array<KeyValue<string, string>>;
+}
+
