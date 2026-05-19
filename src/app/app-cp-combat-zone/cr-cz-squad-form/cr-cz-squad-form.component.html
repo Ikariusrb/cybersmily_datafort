@@ -72,7 +72,7 @@
                 </div>
                 @if(selectedTab === 'team') {
                 <button title="Add Team Member"
-                  class="float-end d-inline-block csd-btn m-0 px-4 py-0 border border-secondary rounded"
+                  class="float-end d-inline-block csd-btn m-0 px-2 py-0 border border-secondary rounded"
                   (click)="showModal(unitListings, squad?.faction)">
                   <fa-icon [icon]="faUserPlus" size="xs" class="m-0"></fa-icon>
                 </button>
@@ -91,7 +91,7 @@
                 </div>
                 @if(selectedTab === 'vehicles') {
                 <button title="Add Vehicle"
-                  class="float-end d-inline-block csd-btn  m-0 px-4 py-0  border border-secondary rounded"
+                  class="float-end d-inline-block csd-btn  m-0 px-2 py-0  border border-secondary rounded"
                   (click)="showModal(vehicleListings, squad?.faction)">
                   <fa-icon [icon]="faCarSide"></fa-icon>
                   <fa-icon [icon]="faPlus" size="xs"></fa-icon>
@@ -111,7 +111,7 @@
                 </div>
                 @if(selectedTab === 'objectives') {
                 <button title="Add Objective"
-                  class="float-end d-inline-block csd-btn m-0 px-4 py-0 border border-secondary rounded"
+                  class="float-end d-inline-block csd-btn m-0 px-2 py-0 border border-secondary rounded"
                   (click)="showObjectiveModal(objectiveListings, squad?.objectives, squad?.faction)">
                   <fa-icon [icon]="faBullseye"></fa-icon>
                   <fa-icon [icon]="faPlus" size="xs"></fa-icon>
@@ -367,7 +367,7 @@
 
   <ng-template #vehicleRow let-vehicle="vehicle" let-vehicleIndex="vehicleIndex" let-teamFaction="teamFaction">
     <div class="row mt-1 py-1">
-      <div class="col-2 col-md-1 text-capitalize ps-0 csd-btn">
+      <div class="col-2 col-md-1 text-capitalize ps-0 csd-btn" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">
         <div [ngStyle]="{
           'display': 'inline-block',
           'width': '100%',
@@ -377,7 +377,7 @@
           'background-size': (vehicle.cards  > 2) ? '450%' : '280%',
           'border-radius': '80%'}"></div>
       </div>
-      <div class="col-6 col-md-9">
+      <div class="col-6 col-md-9" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">
         <div class="row">
           <div class="col-12 col-md-5 col-lg-4 text-uppercase">{{vehicle.name}}</div>
           <div class="col-12 col-md-4 text-capitalize fst-italic text-small">{{vehicle.keywords?.join(', ')}}</div>
@@ -398,7 +398,7 @@
           <div class="col-12 text-capitalize text-small">Slots: {{vehicle.modSlots?.join(', ') || 'None'}}</div>
         </div>
       </div>
-      <div class="col-2 col-md-1">{{vehicle.totalCost}}eb</div>
+      <div class="col-2 col-md-1" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">{{vehicle.totalCost}}eb</div>
       <div class="col-2 col-md-1">
         <button title="Click to remove vehicle." class="csd-btn p-1" (click)="removeVehicle(vehicleIndex)">
           <fa-icon [icon]="faTrash" size="xl"></fa-icon>
@@ -407,5 +407,33 @@
     </div>
   </ng-template>
 
+<ng-template #vehicleForm>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left text-capitalize">
+        <button title="Navigate to the next vehicle." type="button" class="csd-btn p-1"
+          (click)="navigateVehicles(-1, squad.vehicles.length)">
+          <fa-icon [icon]="faChevronLeft"></fa-icon>
+        </button>
+        Vehicle
+        <button title="Navigate to the previous vehicle." type="button" class="csd-btn p-1"
+          (click)="navigateVehicles(1, squad.vehicles.length)">
+          <fa-icon [icon]="faChevronRight"></fa-icon>
+        </button>
+      </h4>
+      <button title="Close" type="button" class="btn-close close float-end" aria-label="Close"
+        (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body py-0">
+      <div class="w-100 py-1 mb-1 border-bottom border-secondary">
+        <button class="csd-btn p-2 text-small border border-secondary rounded ms-3" (click)="inspireTeam()"
+          title="Inspire your team">
+          <fa-icon [icon]="faRedo" size="xl"></fa-icon> Inspire
+        </button>
+      </div>
+      <cs-cr-cz-vehicle-card  [squadIndex]="squadIndex()" [vehicleIndex]="selectedVehicleIndex$ | async" [totalStreetcred]="squad.totalStreetcred" [teamFaction]="faction"></cs-cr-cz-vehicle-card>
+    </div>
+  </ng-template>
 </div>
 }

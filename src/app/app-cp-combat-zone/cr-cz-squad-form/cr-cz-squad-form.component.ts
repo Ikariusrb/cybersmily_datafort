@@ -40,9 +40,12 @@ export class CrCzSquadFormComponent implements OnInit, OnChanges {
 
   luck: Array<number> = [];
   private _selectedUnitIndex: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private _selectedVehicleIndex: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
   selectedUnitIndex$: Observable<number> = this._selectedUnitIndex.asObservable();
+  selectedVehicleIndex$: Observable<number> = this._selectedVehicleIndex.asObservable();
   selectedUnitName: string = '';
+  selectedVehicleName: string = '';
   squadTotalStreetcred: number = 0;
   selectedObjectives: Array<iCrCzObjectiveCard>;
   squadNotes: string = '';
@@ -106,6 +109,13 @@ export class CrCzSquadFormComponent implements OnInit, OnChanges {
     this.showModal(template, faction);
   }
 
+  showVehicleModal(template: TemplateRef<any>, vehicleName:string, vehicleIndex:number, faction: string): void {
+    this._selectedVehicleIndex.next(vehicleIndex);
+    this.selectedVehicleName = vehicleName ;
+    console.log('Showing vehicle modal for vehicle:', vehicleName, 'at index:', vehicleIndex);
+    this.showModal(template, faction);
+  }
+
   closeModal() {
     this.modalRef.hide();
   }
@@ -150,6 +160,12 @@ export class CrCzSquadFormComponent implements OnInit, OnChanges {
     let index = this._selectedUnitIndex.getValue() + nav;
     index = (index >= length) ? 0 : (index < 0) ? length - 1 : index;
     this._selectedUnitIndex.next(index);
+  }
+
+  navigateVehicles(nav: number, length: number): void {
+    let index = this._selectedVehicleIndex.getValue() + nav;
+    index = (index >= length) ? 0 : (index < 0) ? length - 1 : index;
+    this._selectedVehicleIndex.next(index);
   }
 
   togglePayVeteran(): void {

@@ -26,6 +26,7 @@ export interface iCrCzVehicleCard {
   modSlots: Array<string>;
   mods: Array<iCrCzGearItemCard>;
   specialRules?: Array<KeyValue<string, string>>;
+  notes?: string;
   totalCost: number;
 }
 
@@ -40,8 +41,10 @@ export class CrCzVehicleCard {
   modSlots: Array<string> = []  ;
   specialRules?: Array<KeyValue<string, string>>;
   mods : Array<iCrCzGearItemCard> = [];
+  notes?: string;
   get totalCost(): number {
     let cost = this.eb;
+    cost += this.mods?.reduce((a, gear) => a + (gear?.eb || 0), 0) ?? 0;
     return cost;
   }
 }

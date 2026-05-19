@@ -1,7 +1,8 @@
 import { faStar, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Component, OnChanges, OnInit, SimpleChanges, input, output } from '@angular/core';
+import { Component, OnChanges, model, OnInit, SimpleChanges, input, output, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { iCrCzGearItemCard } from '../models/cr-cz-gear-item-card';
+import { CrCzGearDataService } from '../services/cr-cz-gear-data/cr-cz-gear-data.service';
 
 @Component({
     selector: 'cs-cr-cz-gear-list',
@@ -21,17 +22,21 @@ export class CrCzGearListComponent implements OnInit {
   currentFilterFaction: string | undefined;
 
 
-  gearList = input<Array<iCrCzGearItemCard>>();
+  gearList$: Observable<Array<iCrCzGearItemCard>>;
   filterFaction = input<string>('');
   teamFaction = input<string>('');
   unitKeywords = input<Array<string>>([]);
   totalStreetcred = input<number>(0);
   existingGear = input<Array<string>>([]);
   characterGear = input<Array<string>>([]);
+  showVehicleMods = model<boolean>(false); // true for gear, false for mods
+
+  gearDataService = inject(CrCzGearDataService);
 
   addGear = output<iCrCzGearItemCard>();
 
   ngOnInit(): void {
+    this.gearList$ = this.gearDataService.gearList;
     this.currentFilterFaction = this.filterFaction();
     for( let i = 0; i < (this.totalStreetcred() + 1); i++) {
       this.filterCred.push(i);
@@ -53,6 +58,10 @@ export class CrCzGearListComponent implements OnInit {
 
   checkRarity(title: string, rarity: number): boolean {
     return this.getCount(title) > rarity;
+  }
+
+  showMods(value: boolean): void {
+    this.showVehicleMods.update(current => value);
   }
 
   buyGear(gear: iCrCzGearItemCard) {

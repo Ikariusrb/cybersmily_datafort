@@ -19,7 +19,7 @@ export class CrCzGearDataService {
       return this.dataService
         .GetJson(JsonDataFiles.COMBATZONE_GEAR_LIST_JSON)
         .pipe( map( (data: any) => {
-          this._gearList =  data.gear.filter(gear => gear?.isMod === false);
+          this._gearList =  data.gear;
           return this._gearList;
         }));
     }
@@ -27,22 +27,5 @@ export class CrCzGearDataService {
 
   get gearNameList(): Observable<Array<string>> {
     return this.gearList.pipe( map(gearList => gearList.map(gear => gear.name)));
-  }
-
-  get modList(): Observable<Array<iCrCzGearItemCard>> {
-    if(this._modList) {
-      return of(this._modList);
-    } else {
-      return this.dataService
-        .GetJson(JsonDataFiles.COMBATZONE_GEAR_LIST_JSON)
-        .pipe( map( (data: any) => {
-          this._modList = [...data.gear?.filter(gear => gear?.isMod === true)];
-          return this._modList;
-        }));
-    }
-  }
-
-  get modNameList(): Observable<Array<string>> {
-    return this.modList.pipe( map(modList => modList.map(mod => mod.name)));
   }
 }

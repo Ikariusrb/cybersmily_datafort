@@ -1,1 +1,114 @@
-<p>cr-cz-vehicle-card works!</p>
+<div class="row">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="row">
+      <div class="col-2 px-0 text-center">
+        @for(token of hullTokens; track $index; let tokenIndex = $index) {
+        <img alt="Hull token {{token.type}}" class="w-100 csd-btn"
+          [ngClass]="{'opacity-50': token.isUsed}"
+          src="img/cz/hull_{{token.isRed ? 'r' : token.type}}.png"
+          (click)="toggleHullToken(tokenIndex)">
+        }
+        <br>
+        <div dropdown class="btn-group">
+          <button id="btn-hull-token" dropdownToggle type="button"
+            class="csd-btn float-end otherTokens px-3 text-xlarge w-90 dropdown-toggle" title="Add Hull token."
+            aria-controls="dropdown-hull-tokens">
+            <fa-icon [icon]="faPlus" />
+          </button>
+          <ul class="dropdown-menu ms-3 action-selection-list " id="dropdown-hull-tokens" *dropdownMenu role="menu"
+            aria-labelledby="btn-hull-token">
+            <li role="menuitem"><img alt="Hull token Yellow" class="w-50 csd-btn" src="img/cz/hull_y.png"
+                (click)="addHull('y')"></li>
+            <li role="menuitem"><img alt="Hull token Green" class="w-50 csd-btn" src="img/cz/hull_g.png"
+                (click)="addHull('g')"></li>
+          </ul>
+        </div>
+        <br>
+        @if(hasExtraHull) {
+        <button type="button" class="csd-btn otherTokens px-3 text-xlarge w-90" title="Remove the last Hull token."
+          (click)="removeHull()">
+          <fa-icon [icon]="faMinus" />
+        </button>
+        }
+      </div>
+      <div class="col-10">
+        <div class="row">
+          <div class="col-12">
+            <img alt="Vehicle card for {{vehicle()?.name}}" class="w-100 rounded"
+              src="img/cz/vehicles/{{vehicle()?.name?.replaceAll(' ', '_')}}.jpg">
+          </div>
+        </div>
+        <div class="row mt-1">
+          <div class="col-12 text-center text-uppercase fw-bold">{{vehicle()?.name}}</div>
+        </div>
+        <div class="row mt-1">
+          <div class="col-12 text-capitalize text-small">{{vehicle()?.keywords?.join(', ')}}</div>
+        </div>
+        <div class="row mt-1">
+          <div class="col-6 text-capitalize text-small">Seats: {{vehicle()?.seats?.join(', ')}}</div>
+          <div class="col-6 text-capitalize text-small">Slots: {{vehicle()?.modSlots?.join(', ') || 'None'}}</div>
+        </div>
+        <div class="row mt-1">
+          <div class="col-2 text-small">
+            <img alt="Armor {{vehicle()?.armor}}" src="img/cz/shield_icon.png" class="csd-img-icon">
+            <span style="margin-left:-23px;color:white;">{{vehicle()?.armor}}</span>
+          </div>
+          <div class="col-4"></div>
+          <div class="col-6 text-small">
+            <span title="Vehicle cost">Total Cost: {{vehicle()?.totalCost}} eb</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-lg-8">
+    <tabset type="pills" [justified]="true">
+      <tab class="text-center" customClass="customClass">
+        <ng-template tabHeading class="text-center">
+          <fa-icon [icon]="faToolbox" title="Mods Tab" size="xl" />
+          <span class="text-xsmall">{{modTotalCost}}eb</span>
+        </ng-template>
+        <button title="Show mod list" class="csd-btn text-center p-0 w-100 border border-secondary rounded"
+          (click)="showModal(modList)">
+          <fa-icon [icon]="faPlus"></fa-icon>
+        </button>
+        @for(mod of vehicle()?.mods; track $index; let modIndex = $index) {
+        <div [ngClass]="{'float-start d-inline-block me-3 my-0 p-0 rounded position-relative align-top':true}">
+          @if(mod?.keywords.includes('FBC')) {
+            <cs-cr-cz-gear-fbc-card [gear]="mod" [teamFaction]="teamFaction()" [unitKeywords]="vehicle?.keywords"
+              [gearIndex]="modIndex" [totalStreetcred]="totalStreetcred()" [count]="getModCount(mod.name)"
+              (remove)="removeMod($event)"></cs-cr-cz-gear-fbc-card>
+          } @else {
+            <cs-cr-cz-gear-card [gear]="mod" [teamFaction]="teamFaction()" [unitKeywords]="vehicle?.keywords"
+              [gearIndex]="modIndex" [totalStreetcred]="totalStreetcred()" [count]="getModCount(mod.name)"
+              (remove)="removeMod($event)"></cs-cr-cz-gear-card>
+          }
+        </div>
+        }
+      </tab>
+      <tab customClass="customClass">
+        <ng-template tabHeading>
+          <fa-icon [icon]="faFileLines" title="Notes Tab" size="xl" />
+        </ng-template>
+        <div>
+          <textarea title="Notes" [(ngModel)]="notes" class="w-100" rows="16" (change)="updateNotes(notes)"
+            (keyup)="updateNotes(notes)"></textarea>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+</div>
+
+<ng-template #modList>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Mod Listing</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <cs-cr-cz-gear-list [filterFaction]="teamFaction()" [teamFaction]="teamFaction()" [showVehicleMods]="true"
+      [unitKeywords]="vehicle()?.keywords" [totalStreetcred]="totalStreetcred()" [existingGear]="ownedModNames" (addGear)="addMod($event)">
+    </cs-cr-cz-gear-list>
+  </div>
+</ng-template>

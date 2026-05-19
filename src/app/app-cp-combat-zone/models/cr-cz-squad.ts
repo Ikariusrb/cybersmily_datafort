@@ -37,7 +37,7 @@ export class CrCzSquad implements iCrCzSquad {
       return 0;
     }
     let cost = this.units.reduce((a,b) => a + b.totalCost, 0);
-    cost += this.vehicles.reduce((a,b) => a + b.eb, 0);
+    cost += this.vehicles.reduce((a,b) => a + b.totalCost, 0);
     if(this.payVeterans) {
       cost += this.units.reduce((a,b) => a + (b.cred *  5) , 0);
     }

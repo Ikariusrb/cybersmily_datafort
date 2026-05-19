@@ -163,14 +163,10 @@
     </button>
   </div>
   <div class="modal-body">
-    @if(gearList$ | async; as gearList) {
-    <cs-cr-cz-gear-list [gearList]="gearList" [filterFaction]="teamFaction()" [teamFaction]="teamFaction()" [unitKeywords]="unit.keywords"
+    <cs-cr-cz-gear-list  [filterFaction]="teamFaction()" [teamFaction]="teamFaction()" [unitKeywords]="unit.keywords"
       [totalStreetcred]="totalStreetcred()" [existingGear]="unitGearList" [characterGear]="characterGearList"
       (addGear)="addGeaItem($event)">
     </cs-cr-cz-gear-list>
-  } @else {
-    <div>Gear list is missing.</div>
-  }
   </div>
 </ng-template>
 

@@ -44,23 +44,19 @@ export class CrCzCharacterFormComponent implements OnInit, OnChanges {
   faFileLines = faFileLines;
   faLaptopCode = faLaptopCode;
 
-  unitIndex = input<number>();
-  squadIndex = input<number>();
-  totalStreetcred = input<number>();
+  unitIndex = input<number>(-1);
+  squadIndex = input<number>(-1);
+  totalStreetcred = input<number>(0);
   teamFaction = input<string>('');
 
 
   private combatzoneArmyBuilder = inject<CrCzArmyBuilderService>(CrCzArmyBuilderService);
   private modalService = inject<BsModalService>(BsModalService);
-  private gearDataService = inject<CrCzGearDataService>(CrCzGearDataService);
 
   unit$: Observable<iCrCzCharacterCard>;
   unit: iCrCzCharacterCard;
   unitGearList: Array<string> = new Array<string>();
   luck: Array<number> = [];
-  get gearList$(): Observable<Array<iCrCzGearItemCard>> {
-    return this.gearDataService.gearList;
-  }
 
   modalRef: BsModalRef;
   modalConfig: ModalOptions = {
@@ -152,7 +148,7 @@ export class CrCzCharacterFormComponent implements OnInit, OnChanges {
   }
 
   updateLuck(amount: number): void {
-    this.unit.luck += amount;
+    this.unit.luck = amount + (this.unit.luck ?? 0);
 
     this.combatzoneArmyBuilder.updateUnit(
       this.squadIndex(),

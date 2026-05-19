@@ -322,6 +322,13 @@ export class CrCzArmyBuilderService {
     this.saveArmy(army);
   }
 
+  getVehicle(squadIndex: number, vehicleIndex: number): Observable<iCrCzVehicleCard> {
+    return this.army.pipe(
+      take(1),
+      map((army) => army[squadIndex].vehicles?.[vehicleIndex]),
+    );
+  }
+
   /**
    * Add a vehicle to the squad. This method mutates a shallow copy but does not persist.
    */
@@ -329,6 +336,16 @@ export class CrCzArmyBuilderService {
     let army = [...this._army.getValue()];
     army[squadIndex].vehicles?.push(vehicle);
     this.saveArmy(army);
+  }
+
+  updateVehicle(squadIndex: number, vehicleIndex: number, vehicle: iCrCzVehicleCard): void {
+    let army = this._army.getValue();
+    if (army[squadIndex].vehicles && army[squadIndex].vehicles?.[vehicleIndex]) {
+      army[squadIndex].vehicles[vehicleIndex] = vehicle;
+      this.saveArmy(army);
+    } else {
+      console.error('Vehicle index out of bounds for squad', squadIndex, vehicleIndex);
+    }
   }
 
   /**
