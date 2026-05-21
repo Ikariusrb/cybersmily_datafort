@@ -122,7 +122,7 @@
                 <accordion-group>
                   <button
                     class="btn csd-btn btn-block justify-content-between d-flex w-100 shadow-none text-capitalize fw-bold"
-                    accordion-heading type="button" title="Toggle acheived objectives">ACHEIVED
+                    accordion-heading type="button" title="Toggle acheived objectives">ACHIEVED
                     OBJECTIVES({{squad?.objectives?.length}})</button>
                   <div class="row">
                     @for(obj of squad?.objectives | orderby: [{prop: 'name', desc: false}];track $index; let
@@ -195,7 +195,9 @@
       </div>
     -->
       <div class="col-1 p-0 text-center">
-        <div style="display:inline-block;width:100%;aspect-ratio: 1/1;background-image: url(img/cz/units/{{unit.name?.replaceAll(' ', '_')}}_{{unit.cred}}.jpg);background-position: 45% 20%;background-size: 200%;border-radius:80%"></div>
+        <div
+          style="display:inline-block;width:100%;aspect-ratio: 1/1;background-image: url(img/cz/units/{{unit.name?.replaceAll(' ', '_')}}_{{unit.cred}}.jpg);background-position: 45% 20%;background-size: 200%;border-radius:80%">
+        </div>
       </div>
       <div class="col-8 col-md-9 text-capitalize" (click)="showUnitModal(unitForm, unit.name, unitIndex, teamFaction)">
         <div class="row">
@@ -367,7 +369,8 @@
 
   <ng-template #vehicleRow let-vehicle="vehicle" let-vehicleIndex="vehicleIndex" let-teamFaction="teamFaction">
     <div class="row mt-1 py-1">
-      <div class="col-2 col-md-1 text-capitalize ps-0 csd-btn" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">
+      <div class="col-2 col-md-1 text-capitalize ps-0 csd-btn"
+        (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">
         <div [ngStyle]="{
           'display': 'inline-block',
           'width': '100%',
@@ -383,10 +386,11 @@
           <div class="col-12 col-md-4 text-capitalize fst-italic text-small">{{vehicle.keywords?.join(', ')}}</div>
           <div class="col-12 col-md-4 text-capitalize fst-italic text-small">
             <img alt="Armor {{vehicle.armor}}" src="img/cz/shield_icon.png" class="csd-img-icon">
-            <span style="margin-left:-20px;margin-right:20px;" class="text-white text-large pt-2 ftw-bold">{{vehicle.armor}}</span>
-             @for(token of vehicle?.hullTokens; track $index) {
-            <img alt="Hull Token icon {{token.type === 'g'?'Green': token.type === 'y'?'Yellow': 'Red'}}" class="csd-img-icon"
-              src="img/cz/hull_{{token.type}}.png">
+            <span style="margin-left:-20px;margin-right:20px;"
+              class="text-white text-large pt-2 ftw-bold">{{vehicle.armor}}</span>
+            @for(token of vehicle?.hullTokens; track $index) {
+            <img alt="Hull Token icon {{token.type === 'g'?'Green': token.type === 'y'?'Yellow': 'Red'}}"
+              class="csd-img-icon" src="img/cz/hull_{{token.type}}.png">
             }
 
           </div>
@@ -398,7 +402,8 @@
           <div class="col-12 text-capitalize text-small">Slots: {{vehicle.modSlots?.join(', ') || 'None'}}</div>
         </div>
       </div>
-      <div class="col-2 col-md-1" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">{{vehicle.totalCost}}eb</div>
+      <div class="col-2 col-md-1" (click)="showVehicleModal(vehicleForm, vehicle.name, vehicleIndex, teamFaction)">
+        {{vehicle.totalCost}}eb</div>
       <div class="col-2 col-md-1">
         <button title="Click to remove vehicle." class="csd-btn p-1" (click)="removeVehicle(vehicleIndex)">
           <fa-icon [icon]="faTrash" size="xl"></fa-icon>
@@ -407,7 +412,7 @@
     </div>
   </ng-template>
 
-<ng-template #vehicleForm>
+  <ng-template #vehicleForm>
     <div class="modal-header">
       <h4 class="modal-title pull-left text-capitalize">
         <button title="Navigate to the next vehicle." type="button" class="csd-btn p-1"
@@ -432,7 +437,8 @@
           <fa-icon [icon]="faRedo" size="xl"></fa-icon> Inspire
         </button>
       </div>
-      <cs-cr-cz-vehicle-card  [squadIndex]="squadIndex()" [vehicleIndex]="selectedVehicleIndex$ | async" [totalStreetcred]="squad.totalStreetcred" [teamFaction]="faction"></cs-cr-cz-vehicle-card>
+      <cs-cr-cz-vehicle-card [squadIndex]="squadIndex()" [vehicleIndex]="selectedVehicleIndex$ | async"
+        [totalStreetcred]="squad.totalStreetcred" [teamFaction]="faction"></cs-cr-cz-vehicle-card>
     </div>
   </ng-template>
 </div>
