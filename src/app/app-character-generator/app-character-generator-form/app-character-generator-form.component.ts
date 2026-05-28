@@ -19,8 +19,11 @@ import {
   faUndo,
   faQuestionCircle,
   faCog,
-  faIdBadge
+  faIdBadge,
+  faCloudArrowUp,
+  faCloudArrowDown,
 } from '@fortawesome/free-solid-svg-icons';
+import { GoogleDriveService } from './../../shared/services/google-drive/google-drive.service';
 import { Cp2020PlayerCharacter } from './../../shared/models/cp2020character/cp2020-player-character';
 import { Cp2020CharacterGeneratorService } from './../../shared/services/chargen/cp2020-character-generator.service';
 import {
@@ -51,10 +54,15 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   faQuestionCircle = faQuestionCircle;
   faCog = faCog;
   faIdBadge = faIdBadge;
+  faCloudArrowUp = faCloudArrowUp;
+  faCloudArrowDown = faCloudArrowDown;
 
   sources = new Array<TitleValue>();
   charGenSettings: Cp2020CharGenSettings = new Cp2020CharGenSettings();
   charGenSettingsKey: string = 'CP2020_CharGenSettings';
+  driveFileIdKey: string = 'CP2020_CHAR_GEN_DRIVE_FILE_ID';
+  driveFileId: string | null = null;
+  driveBusy = false;
   baseRef: number = 0;
   baseInt: number = 0;
   notes: string = '';
@@ -94,8 +102,13 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     private deckmanagerPDFService: Cp2020DeckmanagerPdfSectionService,
     private contactPDFService: Cp2020ContactSectionPdfService,
     private seo: SeoService,
-    private sourceService: SourcesDataService
+    private sourceService: SourcesDataService,
+    private driveService: GoogleDriveService
   ) {}
+
+  get isDriveConfigured(): boolean {
+    return this.driveService.isConfigured();
+  }
 
   ngOnInit() {
     this.seo.updateMeta(
@@ -103,6 +116,7 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
       "2021-11-21 Cybersmily's Datafort Character Generator for Cyberpunk 2020. This app can print to PDF and save/load the character sheet"
     );
     this.loadSettings();
+    this.driveFileId = window.localStorage.getItem(this.driveFileIdKey);
   }
 
   OnDestroy(): void {
@@ -111,6 +125,8 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
 
   resetCharacter() {
     this.characterService.clearCharacter(this.charGenSettings.isIU);
+    this.driveFileId = null;
+    window.localStorage.removeItem(this.driveFileIdKey);
   }
 
   /**
@@ -166,7 +182,52 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   loadCharacter($event) {
     this.fileLoader
       .importJSON($event.target.files[0])
-      .subscribe((data) => this.characterService.changeCharacter(data));
+      .subscribe((data) => {
+        this.characterService.changeCharacter(data);
+        this.driveFileId = null;
+        window.localStorage.removeItem(this.driveFileIdKey);
+      });
+  }
+
+  async openFromDrive() {
+    if (this.driveBusy) return;
+    this.driveBusy = true;
+    try {
+      const picked = await this.driveService.pickFile();
+      if (!picked) return;
+      const data = await this.driveService.loadFile(picked.fileId);
+      this.characterService.changeCharacter(data);
+      this.driveFileId = picked.fileId;
+      window.localStorage.setItem(this.driveFileIdKey, picked.fileId);
+    } catch (err: any) {
+      console.error('Drive open failed', err);
+      alert('Could not open from Google Drive:\n' + (err?.message || err));
+    } finally {
+      this.driveBusy = false;
+    }
+  }
+
+  saveToDrive() {
+    if (this.driveBusy) return;
+    this.driveBusy = true;
+    this.characterService.character.pipe(first()).subscribe(async (character) => {
+      try {
+        const handle = (character.handle || 'character').replace(/\s+/g, '_');
+        const filename = `CP2020_${handle}.json`;
+        const id = await this.driveService.saveFile(
+          this.driveFileId,
+          filename,
+          JSON.stringify(character)
+        );
+        this.driveFileId = id;
+        window.localStorage.setItem(this.driveFileIdKey, id);
+      } catch (err: any) {
+        console.error('Drive save failed', err);
+        alert('Could not save to Google Drive:\n' + (err?.message || err));
+      } finally {
+        this.driveBusy = false;
+      }
+    });
   }
 
   loadSettings() {

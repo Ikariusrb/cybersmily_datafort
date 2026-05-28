@@ -1,0 +1,166 @@
+import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
+
+declare const google: any;
+declare const gapi: any;
+
+const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files';
+const DOWNLOAD_URL = 'https://www.googleapis.com/drive/v3/files';
+
+export interface PickedFile {
+  fileId: string;
+  name: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class GoogleDriveService {
+  private tokenClient: any = null;
+  private accessToken: string | null = null;
+  private accessTokenExpiresAt = 0;
+  private pickerLoaded = false;
+
+  isConfigured(): boolean {
+    const cfg = environment.googleDrive;
+    return !!(cfg.clientId && cfg.apiKey && cfg.appId);
+  }
+
+  async pickFile(): Promise<PickedFile | null> {
+    await this.ensureAccessToken();
+    await this.ensurePickerLoaded();
+
+    return new Promise<PickedFile | null>((resolve, reject) => {
+      try {
+        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+          .setMimeTypes('application/json,text/plain,text/json')
+          .setMode(google.picker.DocsViewMode.LIST);
+
+        const picker = new google.picker.PickerBuilder()
+          .enableFeature(google.picker.Feature.NAV_HIDDEN)
+          .setOAuthToken(this.accessToken)
+          .setDeveloperKey(environment.googleDrive.apiKey)
+          .setAppId(environment.googleDrive.appId)
+          .addView(view)
+          .setCallback((data: any) => {
+            if (data.action === google.picker.Action.PICKED) {
+              const doc = data.docs?.[0];
+              resolve(doc ? { fileId: doc.id, name: doc.name } : null);
+            } else if (data.action === google.picker.Action.CANCEL) {
+              resolve(null);
+            }
+          })
+          .build();
+        picker.setVisible(true);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async loadFile<T = any>(fileId: string): Promise<T> {
+    await this.ensureAccessToken();
+    const resp = await fetch(`${DOWNLOAD_URL}/${encodeURIComponent(fileId)}?alt=media`, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
+    });
+    if (!resp.ok) {
+      throw new Error(`Drive download failed: ${resp.status} ${await resp.text()}`);
+    }
+    return (await resp.json()) as T;
+  }
+
+  /**
+   * Create (fileId=null) or update an existing Drive file. Returns the fileId.
+   */
+  async saveFile(fileId: string | null, filename: string, jsonContent: string): Promise<string> {
+    await this.ensureAccessToken();
+
+    const metadata: Record<string, any> = { name: filename, mimeType: 'application/json' };
+    const boundary = `cs_drive_${Date.now().toString(36)}`;
+    const body =
+      `--${boundary}\r\n` +
+      `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+      `${JSON.stringify(metadata)}\r\n` +
+      `--${boundary}\r\n` +
+      `Content-Type: application/json\r\n\r\n` +
+      `${jsonContent}\r\n` +
+      `--${boundary}--`;
+
+    const url = fileId
+      ? `${UPLOAD_URL}/${encodeURIComponent(fileId)}?uploadType=multipart`
+      : `${UPLOAD_URL}?uploadType=multipart`;
+    const method = fileId ? 'PATCH' : 'POST';
+
+    const resp = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        'Content-Type': `multipart/related; boundary=${boundary}`,
+      },
+      body,
+    });
+    if (!resp.ok) {
+      throw new Error(`Drive upload failed: ${resp.status} ${await resp.text()}`);
+    }
+    const result = await resp.json();
+    return result.id;
+  }
+
+  signOut(): void {
+    if (this.accessToken && typeof google !== 'undefined') {
+      google.accounts.oauth2.revoke(this.accessToken, () => {});
+    }
+    this.accessToken = null;
+    this.accessTokenExpiresAt = 0;
+  }
+
+  private async ensureAccessToken(): Promise<void> {
+    if (!this.isConfigured()) {
+      throw new Error('Google Drive integration is not configured (missing clientId / apiKey / appId in environment).');
+    }
+    if (this.accessToken && Date.now() < this.accessTokenExpiresAt - 60_000) {
+      return;
+    }
+    await this.waitForGlobal('google', () => typeof google !== 'undefined' && !!google.accounts?.oauth2);
+
+    if (!this.tokenClient) {
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: environment.googleDrive.clientId,
+        scope: DRIVE_FILE_SCOPE,
+        callback: () => {},
+      });
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      this.tokenClient.callback = (resp: any) => {
+        if (resp.error) {
+          reject(new Error(`OAuth failed: ${resp.error}`));
+          return;
+        }
+        this.accessToken = resp.access_token;
+        this.accessTokenExpiresAt = Date.now() + (Number(resp.expires_in) || 3600) * 1000;
+        resolve();
+      };
+      this.tokenClient.requestAccessToken({ prompt: this.accessToken ? '' : 'consent' });
+    });
+  }
+
+  private async ensurePickerLoaded(): Promise<void> {
+    if (this.pickerLoaded) return;
+    await this.waitForGlobal('gapi', () => typeof gapi !== 'undefined' && !!gapi.load);
+    await new Promise<void>((resolve) => gapi.load('picker', { callback: () => resolve() }));
+    this.pickerLoaded = true;
+  }
+
+  private waitForGlobal(label: string, check: () => boolean, timeoutMs = 10_000): Promise<void> {
+    if (check()) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const tick = () => {
+        if (check()) return resolve();
+        if (Date.now() - start > timeoutMs) return reject(new Error(`Timed out waiting for ${label}`));
+        setTimeout(tick, 100);
+      };
+      tick();
+    });
+  }
+}
