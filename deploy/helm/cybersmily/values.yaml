@@ -29,8 +29,7 @@ resources:
     cpu: 25m
     memory: 32Mi
 
-nodeSelector:
-  kubernetes.io/hostname: talos-worker-2
+nodeSelector: {}
 tolerations: []
 affinity: {}
 

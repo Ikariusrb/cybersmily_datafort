@@ -4,33 +4,26 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-if ! command -v helm >/dev/null 2>&1 && command -v mise >/dev/null 2>&1; then
+if ! command -v docker >/dev/null 2>&1 && command -v mise >/dev/null 2>&1; then
   eval "$(mise env -s bash)"
 fi
 
-for cmd in docker git helm kubectl; do
+for cmd in docker git; do
   command -v "$cmd" >/dev/null 2>&1 || { echo "missing required tool: $cmd" >&2; exit 1; }
 done
 
 REGISTRY="${REGISTRY:-registry.jrbhome.net}"
 IMAGE_NAME="${IMAGE_NAME:-cybersmily}"
-NAMESPACE="${NAMESPACE:-cybersmily}"
-RELEASE="${RELEASE:-cybersmily}"
 TAG="${TAG:-$(git rev-parse --short HEAD)}"
+PLATFORM="${PLATFORM:-linux/amd64}"
 IMG="$REGISTRY/$IMAGE_NAME:$TAG"
 LATEST="$REGISTRY/$IMAGE_NAME:latest"
 
-echo ">> building $IMG"
-docker build -t "$IMG" -t "$LATEST" .
+echo ">> building $IMG for $PLATFORM"
+docker build --platform "$PLATFORM" -t "$IMG" -t "$LATEST" .
 
 echo ">> pushing $IMG"
 docker push "$IMG"
 docker push "$LATEST"
 
-echo ">> deploying release '$RELEASE' to namespace '$NAMESPACE'"
-helm upgrade --install "$RELEASE" deploy/helm/cybersmily \
-  --namespace "$NAMESPACE" --create-namespace \
-  --set image.tag="$TAG"
-
-kubectl -n "$NAMESPACE" rollout status "deploy/$RELEASE" --timeout=2m
-kubectl -n "$NAMESPACE" get ingress
+echo ">> built and pushed: $IMG"
