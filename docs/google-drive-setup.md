@@ -105,6 +105,26 @@ After rollout, the character generator toolbar shows two new cloud icons:
 - **Cloud-up** — Save current character to Drive. First click triggers Google consent. Subsequent saves update the same file (tracked by the stored `driveFileId`).
 - **Cloud-down** — Open the Google Picker to choose a JSON file from Drive. Loading replaces the current character and re-associates the Drive file ID.
 
+## Deep-link URLs
+
+Once a character is saved to Drive, you can construct a shareable URL that opens it directly in the character generator:
+
+```
+https://cybersmily.ext.jrbhome.net/apps/chargen?driveFileId=<DRIVE_FILE_ID>
+```
+
+When the chargen route loads with a `driveFileId` query param, the app:
+
+1. Triggers Google sign-in (silent if the user already has a token cached).
+2. Fetches the file via `files.get` with the existing `drive.file` scope.
+3. Replaces the current character and associates the new file ID for subsequent saves.
+
+The `driveFileId` is the same opaque ID returned from `saveFile()` and visible in the Drive web UI's URL when a file is open. The deep link itself confers no access — recipients must already have Drive permission on the file (because the file is shared with them, or because they're the owner).
+
+This is the closest "Open with" equivalent without a Workspace Marketplace listing. Bookmark a per-character URL, paste it in chat, etc. Refreshing the URL re-loads the file from Drive, so it's also a reasonable way to discard local edits.
+
+A **link icon** appears in the toolbar whenever the current character is associated with a Drive file (after a successful save or open). Clicking it copies the deep-link URL to the clipboard — briefly swaps to a checkmark for visual confirmation. Falls back to a `window.prompt` if the Clipboard API is blocked (e.g., non-HTTPS dev contexts).
+
 ## Operational notes
 
 - **Behavior when the token expires:** the next Drive action triggers a silent re-grant via GIS. No user interaction required if they're still signed in to Google in the browser.

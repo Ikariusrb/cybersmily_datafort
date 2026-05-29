@@ -71,6 +71,15 @@
         tabindex="0"
       ></fa-icon>
       <fa-icon
+        *ngIf="isDriveConfigured && driveFileId"
+        [icon]="linkCopied ? faCheck : faLink"
+        [title]="linkCopied ? 'Link copied!' : 'Copy a shareable link to this character'"
+        class="csd-chargen-btn csd-btn me-2"
+        (click)="copyShareLink()"
+        (keyup.enter)="copyShareLink()"
+        tabindex="0"
+      ></fa-icon>
+      <fa-icon
         [icon]="faFilePdf"
         class="csd-chargen-btn csd-btn me-2"
         (click)="createPDF()"

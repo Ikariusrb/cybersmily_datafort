@@ -22,10 +22,13 @@ import {
   faIdBadge,
   faCloudArrowUp,
   faCloudArrowDown,
+  faLink,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { GoogleDriveService } from './../../shared/services/google-drive/google-drive.service';
 import { Cp2020PlayerCharacter } from './../../shared/models/cp2020character/cp2020-player-character';
 import { Cp2020CharacterGeneratorService } from './../../shared/services/chargen/cp2020-character-generator.service';
+import { ActivatedRoute } from '@angular/router';
 import {
   Component,
   OnInit,
@@ -56,6 +59,9 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   faIdBadge = faIdBadge;
   faCloudArrowUp = faCloudArrowUp;
   faCloudArrowDown = faCloudArrowDown;
+  faLink = faLink;
+  faCheck = faCheck;
+  linkCopied = false;
 
   sources = new Array<TitleValue>();
   charGenSettings: Cp2020CharGenSettings = new Cp2020CharGenSettings();
@@ -103,7 +109,8 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     private contactPDFService: Cp2020ContactSectionPdfService,
     private seo: SeoService,
     private sourceService: SourcesDataService,
-    private driveService: GoogleDriveService
+    private driveService: GoogleDriveService,
+    private route: ActivatedRoute
   ) {}
 
   get isDriveConfigured(): boolean {
@@ -117,6 +124,11 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     );
     this.loadSettings();
     this.driveFileId = window.localStorage.getItem(this.driveFileIdKey);
+
+    const requestedDriveId = this.route.snapshot.queryParamMap.get('driveFileId');
+    if (requestedDriveId && this.isDriveConfigured) {
+      this.loadDriveFile(requestedDriveId);
+    }
   }
 
   OnDestroy(): void {
@@ -195,15 +207,50 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     try {
       const picked = await this.driveService.pickFile();
       if (!picked) return;
-      const data = await this.driveService.loadFile(picked.fileId);
-      this.characterService.changeCharacter(data);
-      this.driveFileId = picked.fileId;
-      window.localStorage.setItem(this.driveFileIdKey, picked.fileId);
+      await this.applyDriveFile(picked.fileId);
     } catch (err: any) {
       console.error('Drive open failed', err);
       alert('Could not open from Google Drive:\n' + (err?.message || err));
     } finally {
       this.driveBusy = false;
+    }
+  }
+
+  async loadDriveFile(fileId: string) {
+    if (this.driveBusy) return;
+    this.driveBusy = true;
+    try {
+      await this.applyDriveFile(fileId);
+    } catch (err: any) {
+      console.error('Drive deep-link load failed', err);
+      alert('Could not load the requested Google Drive file:\n' + (err?.message || err));
+    } finally {
+      this.driveBusy = false;
+    }
+  }
+
+  private async applyDriveFile(fileId: string) {
+    const data = await this.driveService.loadFile(fileId);
+    this.characterService.changeCharacter(data);
+    this.driveFileId = fileId;
+    window.localStorage.setItem(this.driveFileIdKey, fileId);
+  }
+
+  get shareUrl(): string | null {
+    if (!this.driveFileId) return null;
+    return `${window.location.origin}/apps/chargen?driveFileId=${encodeURIComponent(this.driveFileId)}`;
+  }
+
+  async copyShareLink() {
+    const url = this.shareUrl;
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      this.linkCopied = true;
+      setTimeout(() => (this.linkCopied = false), 1500);
+    } catch (err) {
+      console.error('Clipboard write failed', err);
+      window.prompt('Copy this share link:', url);
     }
   }
 
