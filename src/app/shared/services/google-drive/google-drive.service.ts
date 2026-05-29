@@ -68,6 +68,20 @@ export class GoogleDriveService {
     return (await resp.json()) as T;
   }
 
+  async getFileMeta(fileId: string): Promise<{ id: string; name: string; canEdit: boolean }> {
+    await this.ensureAccessToken();
+    const url = `${DOWNLOAD_URL}/${encodeURIComponent(fileId)}?fields=id,name,capabilities(canEdit,canModifyContent)`;
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
+    });
+    if (!resp.ok) {
+      throw new Error(`Drive metadata fetch failed: ${resp.status} ${await resp.text()}`);
+    }
+    const data = await resp.json();
+    const canEdit = !!(data.capabilities?.canEdit && data.capabilities?.canModifyContent);
+    return { id: data.id, name: data.name, canEdit };
+  }
+
   /**
    * Create (fileId=null) or update an existing Drive file. Returns the fileId.
    */

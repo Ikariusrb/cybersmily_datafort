@@ -125,6 +125,21 @@ This is the closest "Open with" equivalent without a Workspace Marketplace listi
 
 A **link icon** appears in the toolbar whenever the current character is associated with a Drive file (after a successful save or open). Clicking it copies the deep-link URL to the clipboard — briefly swaps to a checkmark for visual confirmation. Falls back to a `window.prompt` if the Clipboard API is blocked (e.g., non-HTTPS dev contexts).
 
+## Read-only files (viewer-only sharing)
+
+When you open a Drive file you only have viewer access to (e.g. a campaign template a GM shared with you), the app detects this via Drive's `capabilities.canEdit` flag on the file metadata. The behavior:
+
+- The **Save to Drive** button (cloud-up) is hidden — saving back would fail.
+- A **lock icon** appears in the toolbar with a tooltip explaining the situation.
+- The **Save As** button (copy icon) remains — clicking it creates your own editable copy in your Drive, switches the association to that new file, clears the read-only state, and from then on Save updates your copy.
+- Local edits, local-file save, and PDF export continue to work normally — the read-only state only affects the *original Drive file*.
+
+This is the standard "GM shares a template, players fork their own copy" workflow:
+
+1. GM creates a character sheet, saves to Drive, sets sharing on the file to "Anyone with the link — Viewer", copies the deep-link from the toolbar, posts it in the campaign chat.
+2. Each player opens the link → app loads the read-only template → player edits their character → clicks Save As → their own editable copy lands in their Drive.
+3. Players' subsequent Save clicks update their own copy. GM's original template stays untouched.
+
 ## Operational notes
 
 - **Behavior when the token expires:** the next Drive action triggers a silent re-grant via GIS. No user interaction required if they're still signed in to Google in the browser.

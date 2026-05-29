@@ -24,6 +24,8 @@ import {
   faCloudArrowDown,
   faLink,
   faCheck,
+  faCopy,
+  faLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { GoogleDriveService } from './../../shared/services/google-drive/google-drive.service';
 import { Cp2020PlayerCharacter } from './../../shared/models/cp2020character/cp2020-player-character';
@@ -61,7 +63,10 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   faCloudArrowDown = faCloudArrowDown;
   faLink = faLink;
   faCheck = faCheck;
+  faCopy = faCopy;
+  faLock = faLock;
   linkCopied = false;
+  driveReadOnly = false;
 
   sources = new Array<TitleValue>();
   charGenSettings: Cp2020CharGenSettings = new Cp2020CharGenSettings();
@@ -138,6 +143,7 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   resetCharacter() {
     this.characterService.clearCharacter(this.charGenSettings.isIU);
     this.driveFileId = null;
+    this.driveReadOnly = false;
     window.localStorage.removeItem(this.driveFileIdKey);
   }
 
@@ -197,6 +203,7 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
       .subscribe((data) => {
         this.characterService.changeCharacter(data);
         this.driveFileId = null;
+        this.driveReadOnly = false;
         window.localStorage.removeItem(this.driveFileIdKey);
       });
   }
@@ -230,9 +237,13 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   }
 
   private async applyDriveFile(fileId: string) {
-    const data = await this.driveService.loadFile(fileId);
+    const [data, meta] = await Promise.all([
+      this.driveService.loadFile(fileId),
+      this.driveService.getFileMeta(fileId),
+    ]);
     this.characterService.changeCharacter(data);
     this.driveFileId = fileId;
+    this.driveReadOnly = !meta.canEdit;
     window.localStorage.setItem(this.driveFileIdKey, fileId);
   }
 
@@ -255,6 +266,14 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   }
 
   saveToDrive() {
+    this.doDriveSave(this.driveFileId, 'Could not save to Google Drive');
+  }
+
+  saveAsToDrive() {
+    this.doDriveSave(null, 'Could not save a new copy to Google Drive');
+  }
+
+  private doDriveSave(targetFileId: string | null, errorPrefix: string) {
     if (this.driveBusy) return;
     this.driveBusy = true;
     this.characterService.character.pipe(first()).subscribe(async (character) => {
@@ -262,15 +281,16 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
         const handle = (character.handle || 'character').replace(/\s+/g, '_');
         const filename = `CP2020_${handle}.json`;
         const id = await this.driveService.saveFile(
-          this.driveFileId,
+          targetFileId,
           filename,
           JSON.stringify(character)
         );
         this.driveFileId = id;
+        this.driveReadOnly = false;
         window.localStorage.setItem(this.driveFileIdKey, id);
       } catch (err: any) {
         console.error('Drive save failed', err);
-        alert('Could not save to Google Drive:\n' + (err?.message || err));
+        alert(errorPrefix + ':\n' + (err?.message || err));
       } finally {
         this.driveBusy = false;
       }
