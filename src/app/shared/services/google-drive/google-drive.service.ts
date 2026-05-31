@@ -26,22 +26,25 @@ export class GoogleDriveService {
   }
 
   async pickFile(): Promise<PickedFile | null> {
+    console.log('[drive] pickFile: ensuring access token');
     await this.ensureAccessToken();
+    console.log('[drive] pickFile: token ready, loading picker library');
     await this.ensurePickerLoaded();
+    console.log('[drive] pickFile: picker library loaded, building picker');
 
     return new Promise<PickedFile | null>((resolve, reject) => {
       try {
         const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
-          .setMimeTypes('application/json,text/plain,text/json')
-          .setMode(google.picker.DocsViewMode.LIST);
+          .setMimeTypes('application/json');
 
         const picker = new google.picker.PickerBuilder()
-          .enableFeature(google.picker.Feature.NAV_HIDDEN)
           .setOAuthToken(this.accessToken)
           .setDeveloperKey(environment.googleDrive.apiKey)
           .setAppId(environment.googleDrive.appId)
+          .setOrigin(window.location.protocol + '//' + window.location.host)
           .addView(view)
           .setCallback((data: any) => {
+            console.log('[drive] picker callback', data);
             if (data.action === google.picker.Action.PICKED) {
               const doc = data.docs?.[0];
               resolve(doc ? { fileId: doc.id, name: doc.name } : null);
@@ -50,8 +53,10 @@ export class GoogleDriveService {
             }
           })
           .build();
+        console.log('[drive] picker built, making visible');
         picker.setVisible(true);
       } catch (err) {
+        console.error('[drive] picker build/show failed', err);
         reject(err);
       }
     });

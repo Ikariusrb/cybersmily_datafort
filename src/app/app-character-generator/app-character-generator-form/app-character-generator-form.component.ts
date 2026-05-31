@@ -130,10 +130,12 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     this.loadSettings();
     this.driveFileId = window.localStorage.getItem(this.driveFileIdKey);
 
-    const requestedDriveId = this.route.snapshot.queryParamMap.get('driveFileId');
-    if (requestedDriveId && this.isDriveConfigured) {
-      this.loadDriveFile(requestedDriveId);
-    }
+    this.route.queryParamMap.subscribe((params) => {
+      const requestedDriveId = params.get('driveFileId');
+      if (requestedDriveId && this.isDriveConfigured && requestedDriveId !== this.driveFileId) {
+        this.loadDriveFile(requestedDriveId);
+      }
+    });
   }
 
   OnDestroy(): void {
@@ -227,7 +229,9 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
     if (this.driveBusy) return;
     this.driveBusy = true;
     try {
+      console.log('[drive] loading file', fileId);
       await this.applyDriveFile(fileId);
+      console.log('[drive] load complete', fileId);
     } catch (err: any) {
       console.error('Drive deep-link load failed', err);
       alert('Could not load the requested Google Drive file:\n' + (err?.message || err));
@@ -237,10 +241,15 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
   }
 
   private async applyDriveFile(fileId: string) {
-    const [data, meta] = await Promise.all([
-      this.driveService.loadFile(fileId),
-      this.driveService.getFileMeta(fileId),
-    ]);
+    const data = await this.driveService.loadFile(fileId);
+    console.log('[drive] file content loaded', data);
+    let meta: { canEdit: boolean } = { canEdit: true };
+    try {
+      meta = await this.driveService.getFileMeta(fileId);
+      console.log('[drive] meta loaded', meta);
+    } catch (err) {
+      console.warn('[drive] meta fetch failed, defaulting to editable', err);
+    }
     this.characterService.changeCharacter(data);
     this.driveFileId = fileId;
     this.driveReadOnly = !meta.canEdit;
