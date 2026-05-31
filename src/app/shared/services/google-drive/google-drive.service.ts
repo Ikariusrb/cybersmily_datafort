@@ -159,7 +159,7 @@ export class GoogleDriveService {
         this.accessTokenExpiresAt = Date.now() + (Number(resp.expires_in) || 3600) * 1000;
         resolve();
       };
-      this.tokenClient.requestAccessToken({ prompt: this.accessToken ? '' : 'consent' });
+      this.tokenClient.requestAccessToken({ prompt: '' });
     });
   }
 
