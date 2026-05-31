@@ -70,12 +70,12 @@ APIs & Services → Credentials → Create credentials → API key.
 
 Immediately edit the new key:
 
-- **Application restrictions** → HTTP referrers:
-  - `https://cybersmily.ext.jrbhome.net/*`
-  - `http://localhost:4200/*`
+- **Application restrictions** → **None**
 - **API restrictions** → Restrict key → check **Google Picker API**
 
 Save. Copy the key. This is the `apiKey` value.
+
+> **Why no HTTP-referrer restriction?** It's the obvious thing to set, but it breaks the picker in Firefox. Firefox's Enhanced Tracking Protection strips the Referer header on cross-origin iframe requests (the picker UI is hosted at `docs.google.com` in an iframe and calls back to Google with your API key). With no Referer to check against, the referrer restriction rejects the request and the picker returns 401. Leaving Application restrictions at "None" plus the **API restriction to Picker API only** is the right tradeoff — an attacker who exfiltrated the key could only invoke the Picker JS UI from another origin, which is bounded (no data exfiltration possible, no quota-burning APIs reachable). Drive read/write still goes through OAuth tokens, which are origin-bound by the OAuth client config.
 
 ## Wire the values into the app
 

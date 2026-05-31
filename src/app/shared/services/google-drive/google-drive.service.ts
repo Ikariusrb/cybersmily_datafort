@@ -35,7 +35,9 @@ export class GoogleDriveService {
     return new Promise<PickedFile | null>((resolve, reject) => {
       try {
         const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
-          .setMimeTypes('application/json');
+          .setMimeTypes('application/json')
+          .setIncludeFolders(true)
+          .setSelectFolderEnabled(false);
 
         const picker = new google.picker.PickerBuilder()
           .setOAuthToken(this.accessToken)
@@ -54,7 +56,13 @@ export class GoogleDriveService {
           })
           .build();
         console.log('[drive] picker built, making visible');
+        const savedScrollY = window.scrollY;
+        const savedScrollX = window.scrollX;
         picker.setVisible(true);
+        const restore = () => window.scrollTo(savedScrollX, savedScrollY);
+        requestAnimationFrame(restore);
+        setTimeout(restore, 50);
+        setTimeout(restore, 200);
       } catch (err) {
         console.error('[drive] picker build/show failed', err);
         reject(err);
