@@ -98,11 +98,15 @@ export class GoogleDriveService {
 
   /**
    * Create (fileId=null) or update an existing Drive file. Returns the fileId.
+   * On create, `filename` sets the file's name. On update, the file's existing
+   * name is preserved (rename it in Drive if you want a different name).
    */
   async saveFile(fileId: string | null, filename: string, jsonContent: string): Promise<string> {
     await this.ensureAccessToken();
 
-    const metadata: Record<string, any> = { name: filename, mimeType: 'application/json' };
+    const metadata: Record<string, any> = fileId
+      ? {}
+      : { name: filename, mimeType: 'application/json' };
     const boundary = `cs_drive_${Date.now().toString(36)}`;
     const body =
       `--${boundary}\r\n` +

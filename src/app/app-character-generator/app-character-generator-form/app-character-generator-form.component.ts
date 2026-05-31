@@ -284,11 +284,20 @@ export class AppCharacterGeneratorFormComponent implements OnInit {
 
   private doDriveSave(targetFileId: string | null, errorPrefix: string) {
     if (this.driveBusy) return;
-    this.driveBusy = true;
     this.characterService.character.pipe(first()).subscribe(async (character) => {
-      try {
+      let filename: string;
+      if (!targetFileId) {
         const handle = (character.handle || 'character').replace(/\s+/g, '_');
-        const filename = `CP2020_${handle}.json`;
+        const suggested = `CP2020_${handle}.json`;
+        const input = window.prompt('Save as (Drive filename):', suggested);
+        if (input === null) return; // user cancelled
+        filename = input.trim() || suggested;
+        if (!/\.json$/i.test(filename)) filename += '.json';
+      } else {
+        filename = ''; // unused on update — existing name is preserved
+      }
+      this.driveBusy = true;
+      try {
         const id = await this.driveService.saveFile(
           targetFileId,
           filename,
