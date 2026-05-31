@@ -37,7 +37,8 @@ export class GoogleDriveService {
         const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
           .setMimeTypes('application/json')
           .setIncludeFolders(true)
-          .setSelectFolderEnabled(false);
+          .setSelectFolderEnabled(false)
+          .setMode(google.picker.DocsViewMode.LIST);
 
         const picker = new google.picker.PickerBuilder()
           .setOAuthToken(this.accessToken)
